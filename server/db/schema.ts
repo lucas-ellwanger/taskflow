@@ -68,8 +68,6 @@ export const organizationRelations = relations(
   organization,
   ({ one, many }) => ({
     members: many(member),
-    lists: many(list),
-    cards: many(card),
     boards: many(board),
     profile: one(profile, {
       fields: [organization.profileId],
