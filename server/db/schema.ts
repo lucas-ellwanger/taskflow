@@ -1,6 +1,3 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
 import { relations, sql } from "drizzle-orm";
 import {
   index,
@@ -322,3 +319,12 @@ export const orgSubscriptionRelations = relations(
     }),
   }),
 );
+
+export type Profile = typeof profile.$inferSelect;
+export type Organization = typeof organization.$inferSelect;
+export type Member = typeof member.$inferSelect;
+export type List = typeof list.$inferSelect;
+export type Card = typeof card.$inferSelect;
+export type AuditLog = typeof auditLog.$inferSelect;
+export type OrgLimit = typeof orgLimit.$inferSelect;
+export type OrgSubscription = typeof orgSubscription.$inferSelect;
