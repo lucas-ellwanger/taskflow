@@ -27,7 +27,7 @@ const OrganizationIdPage = async ({
     redirect(`/select-org`);
   }
 
-  return <div>Organization Id: {params.organizationId}</div>;
+  return <div>Organization Page</div>;
 };
 
 export default OrganizationIdPage;

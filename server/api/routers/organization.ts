@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -73,4 +72,29 @@ export const organizationRouter = createTRPCRouter({
 
       return orgMember;
     }),
+
+  getUserMemberships: publicProcedure.query(async () => {
+    const profile = await api.profile.currentProfile.query();
+
+    const organizations = await db.query.member.findMany({
+      where: eq(member.profileId, profile.id),
+      columns: {
+        organizationId: true,
+      },
+    });
+
+    if (!organizations) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+
+    const organizationIds: string[] = organizations.map(
+      (org) => org.organizationId
+    );
+
+    const userMemberships = await db.query.organization.findMany({
+      where: inArray(organization.id, organizationIds),
+    });
+
+    return userMemberships;
+  }),
 });
