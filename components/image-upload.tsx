@@ -41,6 +41,10 @@ export const ImageUpload = ({ onChange, value }: ImageUploadProps) => {
         value={file}
         disabled={isSubmitting}
         onChange={onUpload}
+        dropzoneOptions={{
+          maxFiles: 1,
+          maxSize: 4 * 1024 * 1024,
+        }}
       />
     </div>
   );

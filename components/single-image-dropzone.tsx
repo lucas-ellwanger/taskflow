@@ -34,7 +34,7 @@ const ERROR_MESSAGES = {
     return "Invalid file type.";
   },
   tooManyFiles(maxFiles: number) {
-    return `You can only add ${maxFiles} file(s).`;
+    return `You can only add ${maxFiles} file.`;
   },
   fileNotSupported() {
     return "The file is not supported.";
