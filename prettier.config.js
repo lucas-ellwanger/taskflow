@@ -17,6 +17,8 @@ const config = {
     "^@/components/ui/(.*)$",
     "^@/components/(.*)$",
     "^@/styles/(.*)$",
+    "^@/server/(.*)$",
+    "^@/trpc/(.*)$",
     "^@/app/(.*)$",
     "",
     "^[./]",

@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { db } from "@/server/db";
-import { member, organization } from "@/server/db/schema";
-import { api } from "@/trpc/server";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { db } from "@/server/db";
+import { member, organization } from "@/server/db/schema";
+import { api } from "@/trpc/server";
 
 export const organizationRouter = createTRPCRouter({
   findFistByProfileId: publicProcedure

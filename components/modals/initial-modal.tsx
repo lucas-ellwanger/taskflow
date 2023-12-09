@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -26,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/image-upload";
+import { api } from "@/trpc/react";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -57,7 +57,6 @@ export const InitialModal = () => {
     api.organization.create.useMutation({
       onSuccess: () => {
         form.reset();
-        router.refresh();
         window.location.reload();
       },
     });
