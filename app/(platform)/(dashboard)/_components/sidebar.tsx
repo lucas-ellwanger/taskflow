@@ -9,20 +9,19 @@ import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Organization } from "@/server/db/schema";
+import { api } from "@/trpc/react";
 
 import { NavItem } from "./nav-item";
 
 interface SidebarProps {
   storageKey?: string;
-  userMemberships: Organization[];
 }
 
-export const Sidebar = ({
-  storageKey = "t-sidebar-state",
-  userMemberships,
-}: SidebarProps) => {
+export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
   const { organizationId } = useParams();
+
+  const userMemberships =
+    api.organization.getUserMemberships.useQuery().data ?? [];
 
   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
     storageKey,
