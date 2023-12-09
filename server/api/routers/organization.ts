@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -16,14 +16,8 @@ export const organizationRouter = createTRPCRouter({
       const { profileId } = input;
 
       const org = await db.query.organization.findFirst({
-        with: {
-          members: {
-            where: eq(member.profileId, profileId),
-          },
-        },
+        where: eq(organization.profileId, profileId),
       });
-
-      if (!org) return null;
 
       return org;
     }),
@@ -63,5 +57,20 @@ export const organizationRouter = createTRPCRouter({
       } catch (error) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
+    }),
+
+  findMember: publicProcedure
+    .input(z.object({ organizationId: z.string(), profileId: z.string() }))
+    .query(async ({ input }) => {
+      const { organizationId, profileId } = input;
+
+      const orgMember = await db.query.member.findFirst({
+        where: and(
+          eq(member.organizationId, organizationId),
+          eq(member.profileId, profileId)
+        ),
+      });
+
+      return orgMember;
     }),
 });
