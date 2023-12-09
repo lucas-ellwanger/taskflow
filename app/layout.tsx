@@ -2,9 +2,10 @@ import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
+import { TRPCReactProvider } from "@/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 
-import { TRPCReactProvider } from "@/trpc/react";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`font-sans antialiased ${inter.variable}`}>
           <TRPCReactProvider cookies={cookies().toString()}>
-            {children}
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
           </TRPCReactProvider>
         </body>
       </html>
