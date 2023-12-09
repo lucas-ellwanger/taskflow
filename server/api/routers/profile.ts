@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs";
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -17,7 +18,7 @@ export const profileRouter = createTRPCRouter({
     const user = await currentUser();
 
     if (!user) {
-      redirect("/sign-in");
+      throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
     const userProfile = await db.query.profile.findFirst({
@@ -38,7 +39,7 @@ export const profileRouter = createTRPCRouter({
     const { userId } = auth();
 
     if (!userId) {
-      redirect("/sign-in");
+      throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
     const userProfile = await db.query.profile.findFirst({

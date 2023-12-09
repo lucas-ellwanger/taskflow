@@ -46,7 +46,7 @@ export const organizationRouter = createTRPCRouter({
         });
 
         if (!org) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+          throw new TRPCError({ code: "BAD_REQUEST" });
         }
 
         await db.insert(member).values({
