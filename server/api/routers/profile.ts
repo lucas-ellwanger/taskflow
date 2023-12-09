@@ -1,9 +1,8 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { currentUser, redirectToSignIn } from "@clerk/nextjs";
-import { eq } from "drizzle-orm";
-
 import { db } from "@/server/db";
-import { profile } from "@/server/db/schema";
+import { Profile, profile } from "@/server/db/schema";
+import { auth, currentUser, redirectToSignIn } from "@clerk/nextjs";
+import { eq } from "drizzle-orm";
 
 export const profileRouter = createTRPCRouter({
   // create: publicProcedure
@@ -30,17 +29,27 @@ export const profileRouter = createTRPCRouter({
       where: eq(profile.userId, user.id),
     });
 
-    if (userProfile) {
-      return userProfile;
-    }
+    if (userProfile) return;
 
-    const newProfile = await db.insert(profile).values({
+    return await db.insert(profile).values({
       userId: user.id,
       name: `${user.firstName} ${user.lastName}`,
       imageUrl: user.imageUrl,
       email: user.emailAddresses[0]?.emailAddress || "",
     });
+  }),
 
-    return { newProfile };
+  currentProfile: publicProcedure.query(async () => {
+    const { userId } = auth();
+
+    if (!userId) return null;
+
+    const userProfile = await db.query.profile.findFirst({
+      where: eq(profile.userId, userId),
+    });
+
+    if (!userProfile) return null;
+
+    return userProfile;
   }),
 });

@@ -1,10 +1,12 @@
-import { z } from "zod";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
-
-import { db } from "@/server/db";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { member } from "@/server/db/schema";
+import { db } from "@/server/db";
+import { member, organization } from "@/server/db/schema";
+import { api } from "@/trpc/server";
+import { createId } from "@paralleldrive/cuid2";
+import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 export const organizationRouter = createTRPCRouter({
   findFistByProfileId: publicProcedure
@@ -20,10 +22,45 @@ export const organizationRouter = createTRPCRouter({
         },
       });
 
-      if (org) {
-        return redirect(`/organization/${org.id}`);
+      if (!org) return null;
+
+      return org;
+    }),
+
+  create: publicProcedure
+    .input(z.object({ name: z.string(), imageUrl: z.string() }))
+    .mutation(async ({ input }) => {
+      const { name, imageUrl } = input;
+
+      const profile = await api.profile.currentProfile.query();
+
+      if (!profile) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      return { success: true };
+      try {
+        await db.insert(organization).values({
+          name,
+          imageUrl,
+          profileId: profile.id,
+          inviteCode: createId(),
+        });
+
+        const org = await db.query.organization.findFirst({
+          where: eq(organization.profileId, profile.id),
+        });
+
+        if (!org) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        }
+
+        await db.insert(member).values({
+          profileId: profile.id,
+          role: "ADMIN",
+          organizationId: org.id,
+        });
+      } catch (error) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
     }),
 });
