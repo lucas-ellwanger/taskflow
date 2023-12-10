@@ -42,8 +42,6 @@ export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
     setExpanded((curr) => ({ ...curr, [id]: !expanded[id] }));
   };
 
-  // isloading skeleton
-
   return (
     <>
       <div className="mb-1 flex items-center text-xs font-medium">

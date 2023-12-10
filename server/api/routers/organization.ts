@@ -3,95 +3,90 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
+import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { db } from "@/server/db";
 import { member, organization } from "@/server/db/schema";
-import { api } from "@/trpc/server";
 
 export const organizationRouter = createTRPCRouter({
-  findFistByProfileId: publicProcedure
-    .input(z.object({ profileId: z.string() }))
-    .query(async ({ input }) => {
-      const { profileId } = input;
+  findFistByUserId: publicProcedure.query(async ({ ctx }) => {
+    const { session } = await getUserAuth();
 
-      const org = await db.query.organization.findFirst({
-        where: eq(organization.profileId, profileId),
-      });
+    const t = await ctx.db.query.organization.findFirst({
+      where: eq(organization.userId, session?.user.id!),
+    });
 
-      return org;
-    }),
+    return { organization: t };
+  }),
 
   create: publicProcedure
     .input(z.object({ name: z.string(), imageUrl: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
       const { name, imageUrl } = input;
 
-      const profile = await api.profile.currentProfile.query();
-
-      if (!profile) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-
       try {
-        await db.insert(organization).values({
+        await ctx.db.insert(organization).values({
           name,
           imageUrl,
-          profileId: profile.id,
+          userId: session?.user.id!,
           inviteCode: createId(),
         });
 
-        const org = await db.query.organization.findFirst({
-          where: eq(organization.profileId, profile.id),
+        const org = await ctx.db.query.organization.findFirst({
+          where: eq(organization.userId, session?.user.id!),
+          orderBy: (organization, { desc }) => [desc(organization.createdAt)],
         });
 
         if (!org) {
           throw new TRPCError({ code: "BAD_REQUEST" });
         }
 
-        await db.insert(member).values({
-          profileId: profile.id,
+        await ctx.db.insert(member).values({
+          userId: session?.user.id!,
           role: "ADMIN",
           organizationId: org.id,
         });
+
+        return { success: true };
       } catch (error) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create new organization",
+        });
       }
     }),
 
   findMember: publicProcedure
-    .input(z.object({ organizationId: z.string(), profileId: z.string() }))
-    .query(async ({ input }) => {
-      const { organizationId, profileId } = input;
+    .input(z.object({ organizationId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+      const { organizationId } = input;
 
-      const orgMember = await db.query.member.findFirst({
+      const t = await ctx.db.query.member.findFirst({
         where: and(
           eq(member.organizationId, organizationId),
-          eq(member.profileId, profileId)
+          eq(member.userId, session?.user.id!)
         ),
       });
 
-      return orgMember;
+      return { member: t };
     }),
 
-  getUserMemberships: publicProcedure.query(async () => {
-    const profile = await api.profile.currentProfile.query();
+  getUserMemberships: publicProcedure.query(async ({ ctx }) => {
+    const { session } = await getUserAuth();
 
-    const organizations = await db.query.member.findMany({
-      where: eq(member.profileId, profile.id),
+    const organizations = await ctx.db.query.member.findMany({
+      where: eq(member.userId, session?.user.id!),
       columns: {
         organizationId: true,
       },
     });
 
-    if (!organizations) {
-      throw new TRPCError({ code: "NOT_FOUND" });
-    }
-
     const organizationIds: string[] = organizations.map(
       (org) => org.organizationId
     );
 
-    const userMemberships = await db.query.organization.findMany({
+    const userMemberships = await ctx.db.query.organization.findMany({
       where: inArray(organization.id, organizationIds),
     });
 

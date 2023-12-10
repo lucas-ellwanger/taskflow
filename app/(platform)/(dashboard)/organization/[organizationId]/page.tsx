@@ -16,14 +16,11 @@ const OrganizationIdPage = async ({
 }) => {
   const { organizationId } = params;
 
-  const profile = await api.profile.currentProfile.query();
-
-  const orgMember = await api.organization.findMember.query({
+  const { member } = await api.organization.findMember.query({
     organizationId,
-    profileId: profile.id,
   });
 
-  if (!orgMember) {
+  if (!member) {
     redirect(`/select-org`);
   }
 

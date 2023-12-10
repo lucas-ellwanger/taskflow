@@ -4,16 +4,10 @@ import { InitialModal } from "@/components/modals/initial-modal";
 import { api } from "@/trpc/server";
 
 const SetupPage = async () => {
-  await api.profile.initialProfile.mutate();
+  const { organization } = await api.organization.findFistByUserId.query();
 
-  const currentProfile = await api.profile.currentProfile.query();
-
-  const org = await api.organization.findFistByProfileId.query({
-    profileId: currentProfile.id,
-  });
-
-  if (org) {
-    redirect(`/organization/${org.id}`);
+  if (organization) {
+    redirect(`/organization/${organization.id}`);
   }
 
   return <InitialModal />;
