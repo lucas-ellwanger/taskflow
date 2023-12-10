@@ -20,7 +20,7 @@ interface SidebarProps {
 export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
   const { organizationId } = useParams();
 
-  const userMemberships =
+  const organizations =
     api.organization.getUserMemberships.useQuery().data ?? [];
 
   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
@@ -63,7 +63,7 @@ export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
         defaultValue={defaultAccordionValue}
         className="space-y-2"
       >
-        {userMemberships.map((organization) => (
+        {organizations.map((organization) => (
           <NavItem
             key={organization.id}
             isActive={organizationId === organization.id}

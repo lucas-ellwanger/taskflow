@@ -3,10 +3,14 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { api } from "@/trpc/server";
 
 import { MobileSidebar } from "./mobile-sidebar";
+import { OrganizationSwitcher } from "./organization-switcher";
 
-export const Navbar = () => {
+export const Navbar = async () => {
+  const organizations = await api.organization.getUserMemberships.query();
+
   return (
     <nav className="fixed top-0 z-50 flex h-14 w-full items-center border-b bg-background px-4 shadow-sm">
       <MobileSidebar />
@@ -30,7 +34,7 @@ export const Navbar = () => {
         </Button>
       </div>
       <div className="ml-auto flex items-center gap-x-2">
-        <div>{/* TODO: Organization Switcher */}</div>
+        <OrganizationSwitcher items={organizations} />
         <UserButton afterSignOutUrl="/" />
       </div>
     </nav>
