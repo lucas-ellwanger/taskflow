@@ -3,8 +3,7 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
-
-// import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 
 import { siteConfig } from "@/config/site";
 import { EdgeStoreProvider } from "@/lib/edgestore";
@@ -35,12 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`font-sans antialiased ${inter.variable}`}>
-        <TRPCReactProvider cookies={cookies().toString()}>
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
-        </TRPCReactProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`font-sans antialiased ${inter.variable}`}>
+          <TRPCReactProvider cookies={cookies().toString()}>
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          </TRPCReactProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
