@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs";
 
 import { api } from "@/trpc/server";
 

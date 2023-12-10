@@ -7,10 +7,15 @@ import { Menu } from "lucide-react";
 import { useMobileSidebar } from "@/hooks/use-mobile-sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Organization } from "@/server/db/schema";
 
 import { Sidebar } from "./sidebar";
 
-export const MobileSidebar = () => {
+interface MobileSidebarProps {
+  organizations: Organization[];
+}
+
+export const MobileSidebar = ({ organizations }: MobileSidebarProps) => {
   const pathname = usePathname();
 
   const [isMounted, setIsMounted] = useState(false);
@@ -43,7 +48,10 @@ export const MobileSidebar = () => {
       </Button>
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent side="left" className="p-2 pt-10">
-          <Sidebar storageKey="t-sidebar-mobile-state" />
+          <Sidebar
+            organizations={organizations}
+            storageKey="t-sidebar-mobile-state"
+          />
         </SheetContent>
       </Sheet>
     </>

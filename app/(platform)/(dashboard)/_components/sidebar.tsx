@@ -9,19 +9,20 @@ import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/react";
+import { Organization } from "@/server/db/schema";
 
 import { NavItem } from "./nav-item";
 
 interface SidebarProps {
   storageKey?: string;
+  organizations: Organization[];
 }
 
-export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
+export const Sidebar = ({
+  storageKey = "t-sidebar-state",
+  organizations,
+}: SidebarProps) => {
   const { organizationId } = useParams();
-
-  const organizations =
-    api.organization.getUserMemberships.useQuery().data ?? [];
 
   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
     storageKey,
@@ -63,7 +64,7 @@ export const Sidebar = ({ storageKey = "t-sidebar-state" }: SidebarProps) => {
         defaultValue={defaultAccordionValue}
         className="space-y-2"
       >
-        {organizations.map((organization) => (
+        {organizations?.map((organization) => (
           <NavItem
             key={organization.id}
             isActive={organizationId === organization.id}

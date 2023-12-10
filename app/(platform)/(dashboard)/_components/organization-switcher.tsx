@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import {
   Check,
@@ -25,32 +26,32 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Organization, organization } from "@/server/db/schema";
+import { Organization } from "@/server/db/schema";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
 interface OrganizationSwitcherProps extends PopoverTriggerProps {
-  items: Organization[];
+  organizations: Organization[];
 }
 
 export const OrganizationSwitcher = ({
   className,
-  items = [],
+  organizations = [],
 }: OrganizationSwitcherProps) => {
   const params = useParams();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
 
-  const formattedItems = items.map((item) => ({
-    name: item.name,
-    id: item.id,
-  }));
+  // const formattedOrganizations = organizations.map((organization) => ({
+  //   name: organization.name,
+  //   id: organization.id,
+  // }));
 
-  const currentOrganization = formattedItems.find(
-    (item) => item.id === params.organizationId
+  const currentOrganization = organizations.find(
+    (organization) => organization.id === params.organizationId
   );
 
   const onOrganizationSelect = (organization: { id: string; name: string }) => {
@@ -67,26 +68,48 @@ export const OrganizationSwitcher = ({
           role="combobox"
           aria-expanded={open}
           aria-label="Select organization"
-          className={cn("w-[200px] justify-between", className)}
+          className={cn(
+            "w-[200px] justify-between gap-x-2 border-0 pl-0 pr-1.5",
+            className
+          )}
         >
-          <LayoutDashboard className="mr-2 h-5 w-5" />
+          {currentOrganization?.imageUrl && (
+            <Image
+              src={currentOrganization?.imageUrl}
+              alt="Current organization image"
+              width={37}
+              height={37}
+              className="rounded-md object-contain object-center pl-0"
+            />
+          )}
           {currentOrganization?.name}
-          <ChevronsUpDown className="ml-auto h-5 w-5 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-auto h-5 w-5 shrink-0 opacity-30" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent
+        className="w-[300px] rounded-xl border-0 p-2 shadow-md"
+        align="end"
+      >
         <Command>
           <CommandList>
             <CommandInput placeholder="Search organization..." />
             <CommandEmpty>No organization found.</CommandEmpty>
             <CommandGroup heading="Organizations">
-              {formattedItems.map((organization) => (
+              {organizations.map((organization) => (
                 <CommandItem
                   key={organization.id}
                   onSelect={() => onOrganizationSelect(organization)}
-                  className="text-sm"
+                  className="cursor-pointer text-sm"
                 >
-                  <LayoutDashboard className="mr-2 h-5 w-5" />
+                  {currentOrganization?.imageUrl && (
+                    <Image
+                      src={currentOrganization?.imageUrl}
+                      alt="Current organization image"
+                      width={37}
+                      height={37}
+                      className="mr-1.5 rounded-md object-contain object-center"
+                    />
+                  )}
                   {organization.name}
                   <Check
                     className={cn(
@@ -108,7 +131,7 @@ export const OrganizationSwitcher = ({
                   setOpen(false);
                   // TODO: organizationModal.onOpen()
                 }}
-                className="text-sm"
+                className="cursor-pointer text-sm"
               >
                 <PlusCircle className="mr-2 h-5 w-5" />
                 Create organization
