@@ -1,5 +1,6 @@
 "use client";
 
+import { revalidatePath } from "next/cache";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,7 +28,7 @@ export const BoardForm = () => {
   const utils = api.useUtils();
   const params = useParams();
 
-  const orgId = params.organizationId as string;
+  const organizationId = params.organizationId as string;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,7 +39,7 @@ export const BoardForm = () => {
 
   const { mutate: createBoard, isLoading } = api.board.createBoard.useMutation({
     onSuccess: () => {
-      utils.board.invalidate();
+      router.refresh();
       toast.success("Board created!");
     },
     onError: (error) => {
@@ -49,7 +50,7 @@ export const BoardForm = () => {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     createBoard({
       ...values,
-      organizationId: orgId,
+      organizationId,
     });
   };
 
