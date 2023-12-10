@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
@@ -9,12 +9,8 @@ export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
     .input(
       z.object({
-        title: z
-          .string({ required_error: "Title is required" })
-          .min(2, "Title is required"),
-        organizationId: z.string({
-          required_error: "Organization is required",
-        }),
+        title: z.string(),
+        organizationId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -25,13 +21,15 @@ export const boardRouter = createTRPCRouter({
         // const newBoard = await ctx.db.insert(board).values({
         //   title,
         //   userId: session?.user.id!,
-        //   organizationId: input.organizationId,
+        //   organizationId: input.organizationId!,
         // });
-        return { success: true };
+
+        return { data: input };
       } catch (error) {
-        const message = (error as Error).message ?? "Failed to create board";
-        console.error(message);
-        return { error: message };
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create board",
+        });
       }
     }),
 });
