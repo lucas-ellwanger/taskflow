@@ -280,6 +280,7 @@ export const orgSubscriptionRelations = relations(
 );
 
 export type Organization = typeof organization.$inferSelect;
+export type Board = typeof board.$inferSelect;
 export type Member = typeof member.$inferSelect;
 export type List = typeof list.$inferSelect;
 export type Card = typeof card.$inferSelect;

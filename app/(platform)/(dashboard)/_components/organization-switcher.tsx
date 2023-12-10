@@ -73,15 +73,14 @@ export const OrganizationSwitcher = ({
             className
           )}
         >
-          {currentOrganization?.imageUrl && (
-            <Image
-              src={currentOrganization?.imageUrl}
-              alt="Current organization image"
-              width={37}
-              height={37}
-              className="rounded-md object-contain object-center pl-0"
-            />
-          )}
+          <Image
+            src={currentOrganization?.imageUrl!}
+            alt="Current organization image"
+            width={37}
+            height={37}
+            className="rounded-md object-contain object-center pl-0"
+          />
+
           {currentOrganization?.name}
           <ChevronsUpDown className="ml-auto h-5 w-5 shrink-0 opacity-30" />
         </Button>
@@ -101,15 +100,14 @@ export const OrganizationSwitcher = ({
                   onSelect={() => onOrganizationSelect(organization)}
                   className="cursor-pointer text-sm"
                 >
-                  {currentOrganization?.imageUrl && (
-                    <Image
-                      src={currentOrganization?.imageUrl}
-                      alt="Current organization image"
-                      width={37}
-                      height={37}
-                      className="mr-1.5 rounded-md object-contain object-center"
-                    />
-                  )}
+                  <Image
+                    src={currentOrganization?.imageUrl!}
+                    alt="Current organization image"
+                    width={37}
+                    height={37}
+                    className="mr-1.5 rounded-md object-contain object-center"
+                  />
+
                   {organization.name}
                   <Check
                     className={cn(

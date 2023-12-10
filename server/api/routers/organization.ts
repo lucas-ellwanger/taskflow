@@ -11,11 +11,11 @@ export const organizationRouter = createTRPCRouter({
   findFistByUserId: publicProcedure.query(async ({ ctx }) => {
     const { session } = await getUserAuth();
 
-    const t = await ctx.db.query.organization.findFirst({
+    const org = await ctx.db.query.organization.findFirst({
       where: eq(organization.userId, session?.user.id!),
     });
 
-    return { organization: t };
+    return { organization: org };
   }),
 
   create: publicProcedure
@@ -92,4 +92,15 @@ export const organizationRouter = createTRPCRouter({
 
     return userMemberships;
   }),
+
+  getOrganizationById: publicProcedure
+    .input(z.object({ organizationId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { organizationId } = input;
+      const org = await ctx.db.query.organization.findFirst({
+        where: eq(organization.id, organizationId),
+      });
+
+      return { organization: org };
+    }),
 });
