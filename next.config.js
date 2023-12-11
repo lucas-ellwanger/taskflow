@@ -12,6 +12,10 @@ const config = {
         protocol: "https",
         hostname: "files.edgestore.dev",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
 };

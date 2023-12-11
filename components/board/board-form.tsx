@@ -1,11 +1,10 @@
 "use client";
 
-import { revalidatePath } from "next/cache";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { StringValidation, z } from "zod";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 
+import { BoardPicker } from "./board-picker";
+
 const formSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
+  image: z.string().min(1, { message: "Please select an image" }),
 });
 
 export const BoardForm = () => {
@@ -34,12 +36,15 @@ export const BoardForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
+      image: "",
     },
   });
 
+  const isSubmitting = form.formState.isSubmitting;
+
   const { mutate: createBoard, isLoading } = api.board.createBoard.useMutation({
     onSuccess: () => {
-      router.refresh();
+      // await utils.board.getBoards.invalidate();
       toast.success("Board created!");
     },
     onError: (error) => {
@@ -57,6 +62,23 @@ export const BoardForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Board image</FormLabel>
+              <FormControl>
+                <BoardPicker
+                  value={field.value}
+                  isSubmitting={isSubmitting}
+                  onChange={(image) => field.onChange(image)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="title"

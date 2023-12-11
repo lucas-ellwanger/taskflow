@@ -10,19 +10,52 @@ export const boardRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
+        image: z.string(),
         organizationId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { session } = await getUserAuth();
-      const { title, organizationId } = input;
+      const { title, image, organizationId } = input;
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      const [
+        imageId,
+        imageThumbUrl,
+        imageFullUrl,
+        imageLinkHTML,
+        imageUserName,
+      ] = image.split("|");
+
+      if (
+        !imageId ||
+        !imageThumbUrl ||
+        !imageFullUrl ||
+        !imageLinkHTML ||
+        !imageUserName
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Failed to create board",
+        });
+      }
 
       try {
-        // const newBoard = await ctx.db.insert(board).values({
-        //   title,
-        //   userId: session?.user.id!,
-        //   organizationId: input.organizationId!,
-        // });
+        await ctx.db.insert(board).values({
+          title,
+          organizationId,
+          imageId,
+          imageThumbUrl,
+          imageFullUrl,
+          imageUserName,
+          imageLinkHTML,
+        });
 
         return { data: input };
       } catch (error) {
