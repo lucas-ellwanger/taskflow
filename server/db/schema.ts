@@ -6,6 +6,7 @@ import {
   int,
   mysqlEnum,
   mysqlTableCreator,
+  serial,
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
@@ -78,10 +79,7 @@ export const memberRelations = relations(member, ({ one }) => ({
 export const board = mysqlTable(
   "board",
   {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .notNull()
-      .$defaultFn(() => createId()),
+    id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     imageId: varchar("image_id", { length: 256 }).notNull(),
     imageThumbUrl: varchar("image_thumb_url", { length: 256 }).notNull(),
@@ -115,10 +113,7 @@ export const boardRelations = relations(board, ({ one, many }) => ({
 export const list = mysqlTable(
   "list",
   {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .notNull()
-      .$defaultFn(() => createId()),
+    id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     order: int("order").notNull(),
 
@@ -146,10 +141,7 @@ export const listRelations = relations(list, ({ one, many }) => ({
 export const card = mysqlTable(
   "card",
   {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .notNull()
-      .$defaultFn(() => createId()),
+    id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     order: int("order").notNull(),
     description: varchar("description", { length: 256 }),
@@ -229,7 +221,6 @@ export const orgLimit = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (orgLimit) => ({
-    id_index: index("id_index").on(orgLimit.id),
     organization_id_index: index("organization_id_index").on(
       orgLimit.organizationId
     ),
@@ -262,7 +253,6 @@ export const orgSubscription = mysqlTable(
       .unique(),
   },
   (orgSubscription) => ({
-    id_index: index("id_index").on(orgSubscription.id),
     organization_id_index: index("org_id_index").on(
       orgSubscription.organizationId
     ),

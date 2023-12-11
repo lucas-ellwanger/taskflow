@@ -3,12 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Check,
-  ChevronsUpDown,
-  LayoutDashboard,
-  PlusCircle,
-} from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,11 +40,6 @@ export const OrganizationSwitcher = ({
 
   const [open, setOpen] = useState(false);
 
-  // const formattedOrganizations = organizations.map((organization) => ({
-  //   name: organization.name,
-  //   id: organization.id,
-  // }));
-
   const currentOrganization = organizations.find(
     (organization) => organization.id === params.organizationId
   );
@@ -73,13 +63,14 @@ export const OrganizationSwitcher = ({
             className
           )}
         >
-          <Image
-            src={currentOrganization?.imageUrl!}
-            alt="Current organization image"
-            width={37}
-            height={37}
-            className="rounded-md object-contain object-center pl-0"
-          />
+          <div className="relative h-9 w-9">
+            <Image
+              fill
+              src={currentOrganization?.imageUrl!}
+              alt="Current organization image"
+              className="rounded-md object-cover object-center pl-0"
+            />
+          </div>
 
           {currentOrganization?.name}
           <ChevronsUpDown className="ml-auto h-5 w-5 shrink-0 opacity-30" />
@@ -100,14 +91,14 @@ export const OrganizationSwitcher = ({
                   onSelect={() => onOrganizationSelect(organization)}
                   className="cursor-pointer text-sm"
                 >
-                  <Image
-                    src={currentOrganization?.imageUrl!}
-                    alt="Current organization image"
-                    width={37}
-                    height={37}
-                    className="mr-1.5 rounded-md object-contain object-center"
-                  />
-
+                  <div className="relative mr-1.5 h-9 w-9">
+                    <Image
+                      fill
+                      src={currentOrganization?.imageUrl!}
+                      alt="Current organization image"
+                      className="rounded-md object-cover object-center"
+                    />
+                  </div>
                   {organization.name}
                   <Check
                     className={cn(
