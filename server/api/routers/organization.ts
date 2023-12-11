@@ -99,6 +99,9 @@ export const organizationRouter = createTRPCRouter({
       const { organizationId } = input;
       const org = await ctx.db.query.organization.findFirst({
         where: eq(organization.id, organizationId),
+        with: {
+          boards: true,
+        },
       });
 
       return { organization: org };

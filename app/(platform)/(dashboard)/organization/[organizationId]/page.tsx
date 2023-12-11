@@ -21,10 +21,6 @@ const OrganizationIdPage = async ({
 }) => {
   const { organizationId } = params;
 
-  const { organization } = await api.organization.getOrganizationById.query({
-    organizationId,
-  });
-  const organizations = await api.organization.getUserMemberships.query();
   const { member } = await api.organization.findMember.query({
     organizationId,
   });
@@ -32,6 +28,12 @@ const OrganizationIdPage = async ({
   if (!member) {
     redirect(`/select-org`);
   }
+
+  const organizations = await api.organization.getUserMemberships.query();
+
+  const { organization } = await api.organization.getOrganizationById.query({
+    organizationId,
+  });
 
   return (
     <main className="mx-auto max-w-6xl px-4 pt-20 md:pt-24 2xl:max-w-screen-xl">
@@ -45,7 +47,9 @@ const OrganizationIdPage = async ({
           </Suspense>
           <Separator className="my-4" />
           <div className="px-2 md:px-4">
-            <BoardList />
+            <Suspense fallback={<BoardList.Skeleton />}>
+              <BoardList boards={organization?.boards} />
+            </Suspense>
           </div>
         </div>
       </div>

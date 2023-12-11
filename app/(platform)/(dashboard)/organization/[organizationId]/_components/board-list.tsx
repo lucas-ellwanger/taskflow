@@ -1,9 +1,16 @@
+import Link from "next/link";
 import { HelpCircle, User2 } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { BoardPopover } from "@/components/board/board-popover";
 import { Hint } from "@/components/hint";
+import { Board } from "@/server/db/schema";
 
-export const BoardList = () => {
+interface BoardListProps {
+  boards: Board[] | undefined;
+}
+
+export const BoardList = ({ boards }: BoardListProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center text-lg font-semibold text-neutral-700">
@@ -11,6 +18,19 @@ export const BoardList = () => {
         Your boards
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {boards?.map((board) => (
+          <Link
+            key={board.id}
+            href={`/organization/${board.organizationId}/board/${board.id}`}
+            style={{ backgroundImage: `url(${board.imageThumbUrl})` }}
+            className="group relative aspect-video h-full w-full overflow-hidden rounded-md bg-muted bg-cover bg-center bg-no-repeat p-2"
+          >
+            <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30" />
+            <p className="relative ml-1 font-semibold text-white">
+              {board.title}
+            </p>
+          </Link>
+        ))}
         <BoardPopover sideOffset={10} side="right">
           <div
             role="button"
@@ -29,6 +49,19 @@ export const BoardList = () => {
           </div>
         </BoardPopover>
       </div>
+    </div>
+  );
+};
+
+BoardList.Skeleton = function SkeletonBoardList() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
     </div>
   );
 };
