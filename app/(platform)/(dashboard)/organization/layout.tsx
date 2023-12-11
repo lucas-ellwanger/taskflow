@@ -1,11 +1,23 @@
-import { Navbar } from "../_components/navbar";
+import { api } from "@/trpc/server";
 
-const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
+import { Sidebar } from "../_components/sidebar";
+
+const OrganizationLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const organizations = await api.organization.getUserMemberships.query();
+
   return (
-    <div className="h-full">
-      <Navbar />
-      <>{children}</>
-    </div>
+    <main className="mx-auto max-w-6xl px-4 pt-20 md:pt-24 2xl:max-w-screen-xl">
+      <div className="flex gap-x-7">
+        <div className="hidden w-64 shrink-0 md:block">
+          <Sidebar organizations={organizations} />
+        </div>
+        {children}
+      </div>
+    </main>
   );
 };
 

@@ -79,7 +79,10 @@ export const memberRelations = relations(member, ({ one }) => ({
 export const board = mysqlTable(
   "board",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
     imageId: varchar("image_id", { length: 256 }).notNull(),
     imageThumbUrl: varchar("image_thumb_url", { length: 256 }).notNull(),
@@ -95,7 +98,6 @@ export const board = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (board) => ({
-    id_index: index("id_index").on(board.id),
     organization_id_index: index("organization_id_index").on(
       board.organizationId
     ),
@@ -113,7 +115,10 @@ export const boardRelations = relations(board, ({ one, many }) => ({
 export const list = mysqlTable(
   "list",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
     order: int("order").notNull(),
 
@@ -125,7 +130,6 @@ export const list = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (list) => ({
-    id_index: index("id_index").on(list.id),
     board_id_index: index("board_id_index").on(list.boardId),
   })
 );
@@ -141,7 +145,10 @@ export const listRelations = relations(list, ({ one, many }) => ({
 export const card = mysqlTable(
   "card",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
     order: int("order").notNull(),
     description: varchar("description", { length: 256 }),
@@ -154,7 +161,6 @@ export const card = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (card) => ({
-    id_index: index("id_index").on(card.id),
     list_id_index: index("list_id_index").on(card.listId),
   })
 );

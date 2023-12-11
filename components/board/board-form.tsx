@@ -48,11 +48,11 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
   const isSubmitting = form.formState.isSubmitting;
 
   const { mutate: createBoard, isLoading } = api.board.createBoard.useMutation({
-    onSuccess: ({ id }) => {
+    onSuccess: ({ createdBoard }) => {
       // await utils.board.getBoards.invalidate();
       toast.success("Board created!");
       closeRef.current?.click();
-      router.push(`/organization/${organizationId}/board/${id}`);
+      router.push(`/board/${createdBoard.id}`);
     },
     onError: (error) => {
       toast.error(error.message);

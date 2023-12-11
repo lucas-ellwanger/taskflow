@@ -1,9 +1,10 @@
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board } from "@/server/db/schema";
+import { board, organization } from "@/server/db/schema";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
@@ -47,7 +48,7 @@ export const boardRouter = createTRPCRouter({
       }
 
       try {
-        const newBoard = await ctx.db.insert(board).values({
+        await ctx.db.insert(board).values({
           title,
           organizationId,
           imageId,
@@ -57,7 +58,19 @@ export const boardRouter = createTRPCRouter({
           imageLinkHTML,
         });
 
-        return { data: input, id: newBoard.insertId };
+        const createdBoard = await ctx.db.query.board.findFirst({
+          where: eq(board.organizationId, organizationId),
+          orderBy: (board, { desc }) => [desc(board.createdAt)],
+        });
+
+        if (!createdBoard) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Failed to create board",
+          });
+        }
+
+        return { createdBoard };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
