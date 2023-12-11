@@ -1,5 +1,6 @@
 "use client";
 
+import { ElementRef, useRef } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ export const BoardPopover = ({
   align,
   sideOffset = 0,
 }: BoardPopoverProps) => {
+  const closeRef = useRef<ElementRef<"button">>(null);
+
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -36,7 +39,7 @@ export const BoardPopover = ({
         <div className="pb-4 text-center text-sm font-medium text-neutral-700">
           Create board
         </div>
-        <PopoverClose asChild>
+        <PopoverClose asChild ref={closeRef}>
           <Button
             className="absolute right-2 top-2 h-auto w-auto p-2 text-neutral-700"
             variant="ghost"
@@ -44,7 +47,7 @@ export const BoardPopover = ({
             <X className="h-4 w-4" />
           </Button>
         </PopoverClose>
-        <BoardForm />
+        <BoardForm closeRef={closeRef} />
       </PopoverContent>
     </Popover>
   );

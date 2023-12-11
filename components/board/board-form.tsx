@@ -1,5 +1,6 @@
 "use client";
 
+import { RefObject } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,7 +26,11 @@ const formSchema = z.object({
   image: z.string().min(1, { message: "Please select an image" }),
 });
 
-export const BoardForm = () => {
+interface BoardFormProps {
+  closeRef: RefObject<HTMLButtonElement>;
+}
+
+export const BoardForm = ({ closeRef }: BoardFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
   const params = useParams();
@@ -45,8 +50,9 @@ export const BoardForm = () => {
   const { mutate: createBoard, isLoading } = api.board.createBoard.useMutation({
     onSuccess: ({ id }) => {
       // await utils.board.getBoards.invalidate();
-      router.push(`/organization/${organizationId}/board/${id}`);
       toast.success("Board created!");
+      closeRef.current?.click();
+      router.push(`/organization/${organizationId}/board/${id}`);
     },
     onError: (error) => {
       toast.error(error.message);
