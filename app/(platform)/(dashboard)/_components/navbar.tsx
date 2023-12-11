@@ -2,6 +2,7 @@ import { UserButton } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { BoardPopover } from "@/components/board/board-popover";
 import { Logo } from "@/components/logo";
 import { api } from "@/trpc/server";
 
@@ -18,20 +19,24 @@ export const Navbar = async () => {
         <div className="hidden md:flex">
           <Logo />
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          className="hidden h-auto rounded-sm px-2 py-1.5 md:block"
-        >
-          Create
-        </Button>
-        <Button
-          variant="primary"
-          size="sm"
-          className="block rounded-sm md:hidden"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+        <BoardPopover align="start" side="bottom" sideOffset={18}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="hidden h-auto rounded-sm px-2 py-1.5 md:block"
+          >
+            Create
+          </Button>
+        </BoardPopover>
+        <BoardPopover side="bottom" sideOffset={5}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="block rounded-sm md:hidden"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </BoardPopover>
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <OrganizationSwitcher organizations={organizations} />
