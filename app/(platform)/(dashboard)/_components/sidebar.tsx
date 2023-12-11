@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 
