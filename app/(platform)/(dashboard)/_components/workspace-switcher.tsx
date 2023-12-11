@@ -21,32 +21,38 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Organization } from "@/server/db/schema";
+import { Workspace } from "@/server/db/schema";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
-interface OrganizationSwitcherProps extends PopoverTriggerProps {
-  organizations: Organization[];
+interface WorkspaceSwitcherProps extends PopoverTriggerProps {
+  workspaces: Workspace[];
 }
 
-export const OrganizationSwitcher = ({
+export const WorkspaceSwitcher = ({
   className,
-  organizations = [],
-}: OrganizationSwitcherProps) => {
+  workspaces = [],
+}: WorkspaceSwitcherProps) => {
   const params = useParams();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
 
-  const currentOrganization = organizations.find(
-    (organization) => organization.id === params.organizationId
-  );
+  let currentWorkspace: Workspace | undefined;
 
-  const onOrganizationSelect = (organization: { id: string; name: string }) => {
+  if (!params.workspaceId) {
+    currentWorkspace = workspaces[0];
+  } else {
+    currentWorkspace = workspaces.find(
+      (workspace) => workspace.id === params.workspaceId
+    );
+  }
+
+  const onWorkspaceSelect = (workspace: { id: string; name: string }) => {
     setOpen(false);
-    router.push(`/organization/${organization.id}`);
+    router.push(`/workspace/${workspace.id}`);
   };
 
   return (
@@ -57,7 +63,7 @@ export const OrganizationSwitcher = ({
           size="sm"
           role="combobox"
           aria-expanded={open}
-          aria-label="Select organization"
+          aria-label="Select workspace"
           className={cn(
             "w-[200px] justify-between gap-x-2 border-0 pl-0 pr-1.5",
             className
@@ -66,13 +72,13 @@ export const OrganizationSwitcher = ({
           <div className="relative h-9 w-9">
             <Image
               fill
-              src={currentOrganization?.imageUrl!}
-              alt="Current organization image"
+              src={currentWorkspace?.imageUrl!}
+              alt="Current workspace image"
               className="rounded-md object-cover object-center pl-0"
             />
           </div>
 
-          {currentOrganization?.name}
+          {currentWorkspace?.name}
           <ChevronsUpDown className="ml-auto h-5 w-5 shrink-0 opacity-30" />
         </Button>
       </PopoverTrigger>
@@ -82,28 +88,28 @@ export const OrganizationSwitcher = ({
       >
         <Command>
           <CommandList>
-            <CommandInput placeholder="Search organization..." />
-            <CommandEmpty>No organization found.</CommandEmpty>
-            <CommandGroup heading="Organizations">
-              {organizations.map((organization) => (
+            <CommandInput placeholder="Search workspace..." />
+            <CommandEmpty>No workspace found.</CommandEmpty>
+            <CommandGroup heading="Workspaces">
+              {workspaces.map((workspace) => (
                 <CommandItem
-                  key={organization.id}
-                  onSelect={() => onOrganizationSelect(organization)}
+                  key={workspace.id}
+                  onSelect={() => onWorkspaceSelect(workspace)}
                   className="cursor-pointer text-sm"
                 >
                   <div className="relative mr-1.5 h-9 w-9">
                     <Image
                       fill
-                      src={currentOrganization?.imageUrl!}
-                      alt="Current organization image"
+                      src={currentWorkspace?.imageUrl!}
+                      alt="Current workspace image"
                       className="rounded-md object-cover object-center"
                     />
                   </div>
-                  {organization.name}
+                  {workspace.name}
                   <Check
                     className={cn(
                       "ml-auto h-5 w-5",
-                      currentOrganization?.id === organization.id
+                      currentWorkspace?.id === workspace.id
                         ? "opacity-100"
                         : "opacity-0"
                     )}
@@ -118,12 +124,12 @@ export const OrganizationSwitcher = ({
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  // TODO: organizationModal.onOpen()
+                  // TODO: workspaceModal.onOpen()
                 }}
                 className="cursor-pointer text-sm"
               >
                 <PlusCircle className="mr-2 h-5 w-5" />
-                Create organization
+                Create Workspace
               </CommandItem>
             </CommandGroup>
           </CommandList>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 
@@ -9,20 +9,20 @@ import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Organization } from "@/server/db/schema";
+import { Workspace } from "@/server/db/schema";
 
 import { NavItem } from "./nav-item";
 
 interface SidebarProps {
   storageKey?: string;
-  organizations: Organization[];
+  workspaces: Workspace[];
 }
 
 export const Sidebar = ({
   storageKey = "t-sidebar-state",
-  organizations,
+  workspaces,
 }: SidebarProps) => {
-  const { organizationId } = useParams();
+  const { workspaceId } = useParams();
 
   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
     storageKey,
@@ -54,7 +54,7 @@ export const Sidebar = ({
           variant="ghost"
           className="ml-auto"
         >
-          <Link href="/select-org">
+          <Link href="/select-workspace">
             <Plus className="h-4 w-4" />
           </Link>
         </Button>
@@ -64,12 +64,12 @@ export const Sidebar = ({
         defaultValue={defaultAccordionValue}
         className="space-y-2"
       >
-        {organizations?.map((organization) => (
+        {workspaces?.map((workspace) => (
           <NavItem
-            key={organization.id}
-            isActive={organizationId === organization.id}
-            isExpanded={expanded[organization.id]}
-            organization={organization}
+            key={workspace.id}
+            isActive={workspaceId === workspace.id}
+            isExpanded={expanded[workspace.id]}
+            workspace={workspace}
             onExpand={onExpand}
           />
         ))}

@@ -12,12 +12,12 @@ export const boardRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         image: z.string(),
-        organizationId: z.string(),
+        workspaceId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { session } = await getUserAuth();
-      const { title, image, organizationId } = input;
+      const { title, image, workspaceId } = input;
 
       if (!session) {
         throw new TRPCError({
@@ -50,7 +50,7 @@ export const boardRouter = createTRPCRouter({
       try {
         await ctx.db.insert(board).values({
           title,
-          organizationId,
+          workspaceId,
           imageId,
           imageThumbUrl,
           imageFullUrl,
@@ -59,7 +59,7 @@ export const boardRouter = createTRPCRouter({
         });
 
         const createdBoard = await ctx.db.query.board.findFirst({
-          where: eq(board.organizationId, organizationId),
+          where: eq(board.workspaceId, workspaceId),
           orderBy: (board, { desc }) => [desc(board.createdAt)],
         });
 

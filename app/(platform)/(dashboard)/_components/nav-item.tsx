@@ -12,19 +12,19 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Organization } from "@/server/db/schema";
+import { Workspace } from "@/server/db/schema";
 
 interface NavItemProps {
   isExpanded: boolean;
   isActive: boolean;
-  organization: Organization;
+  workspace: Workspace;
   onExpand: (id: string) => void;
 }
 
 export const NavItem = ({
   isExpanded,
   isActive,
-  organization,
+  workspace,
   onExpand,
 }: NavItemProps) => {
   const router = useRouter();
@@ -40,22 +40,22 @@ export const NavItem = ({
     {
       label: "Boards",
       icon: <Layout className="mr-2 h-4 w-4" />,
-      href: `/organization/${organization.id}`,
+      href: `/workspace/${workspace.id}`,
     },
     {
       label: "Activity",
       icon: <Activity className="mr-2 h-4 w-4" />,
-      href: `/organization/${organization.id}/activity`,
+      href: `/workspace/${workspace.id}/activity`,
     },
     {
       label: "Settings",
       icon: <Settings className="mr-2 h-4 w-4" />,
-      href: `/organization/${organization.id}/settings`,
+      href: `/workspace/${workspace.id}/settings`,
     },
     {
       label: "Billing",
       icon: <CreditCard className="mr-2 h-4 w-4" />,
-      href: `/organization/${organization.id}/billing`,
+      href: `/workspace/${workspace.id}/billing`,
     },
   ];
 
@@ -68,9 +68,9 @@ export const NavItem = ({
   }
 
   return (
-    <AccordionItem value={organization.id} className="border-none">
+    <AccordionItem value={workspace.id} className="border-none">
       <AccordionTrigger
-        onClick={() => onExpand(organization.id)}
+        onClick={() => onExpand(workspace.id)}
         className={cn(
           "flex items-center gap-x-2 rounded-md p-1.5 text-start text-muted-foreground no-underline transition hover:bg-muted-foreground/10 hover:no-underline",
           isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
@@ -80,12 +80,12 @@ export const NavItem = ({
           <div className="relative h-7 w-7">
             <Image
               fill
-              src={organization.imageUrl}
-              alt="Organization"
+              src={workspace.imageUrl}
+              alt="workspace"
               className="rounded-sm object-cover"
             />
           </div>
-          <span className="text-sm font-medium">{organization.name}</span>
+          <span className="text-sm font-medium">{workspace.name}</span>
         </div>
       </AccordionTrigger>
       <AccordionContent className="pt-1 text-muted-foreground">

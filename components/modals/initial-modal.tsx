@@ -53,8 +53,8 @@ export const InitialModal = () => {
     },
   });
 
-  const { mutate: createOrganization, isLoading } =
-    api.organization.create.useMutation({
+  const { mutate: createWorkspace, isLoading } =
+    api.workspace.create.useMutation({
       onSuccess: () => {
         form.reset();
         window.location.reload();
@@ -64,7 +64,7 @@ export const InitialModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { name, imageUrl } = values;
 
-    createOrganization({ name, imageUrl });
+    createWorkspace({ name, imageUrl });
   };
 
   if (!isMounted) return null;
@@ -74,10 +74,10 @@ export const InitialModal = () => {
       <DialogContent className="overflow-hidden bg-background p-0 text-foreground">
         <DialogHeader className="px-6 pt-8">
           <DialogTitle className="text-center text-2xl font-semibold">
-            Create your first Organization
+            Create your first Workspace
           </DialogTitle>
           <DialogDescription className="text-center text-base text-muted-foreground">
-            Give a name and an image to your organization. <br />
+            Give a name and an image to your Workspace. <br />
             You can always change it later.
           </DialogDescription>
         </DialogHeader>
@@ -107,13 +107,13 @@ export const InitialModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-semibold text-muted-foreground dark:text-secondary/70">
-                      Organization name
+                      Workspace name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
                         className="border-0 bg-zinc-300/50 text-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
-                        placeholder="Enter organization name"
+                        placeholder="Enter Workspace name"
                         {...field}
                       />
                     </FormControl>

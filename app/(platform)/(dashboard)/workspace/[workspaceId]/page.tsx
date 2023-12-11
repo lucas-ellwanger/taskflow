@@ -7,44 +7,40 @@ import { api } from "@/trpc/server";
 import { BoardList } from "./_components/board-list";
 import { Info, InfoSkeleton } from "./_components/info";
 
-interface OrganizationIdProps {
+interface WorkspaceIdPageProps {
   params: {
-    organizationId: string;
+    workspaceId: string;
   };
 }
 
-const OrganizationIdPage = async ({
-  params,
-}: {
-  params: { organizationId: string };
-}) => {
-  const { organizationId } = params;
+const WorkspaceIdPage = async ({ params }: WorkspaceIdPageProps) => {
+  const { workspaceId } = params;
 
-  const { member } = await api.organization.findMember.query({
-    organizationId,
+  const { member } = await api.workspace.findMember.query({
+    workspaceId,
   });
 
   if (!member) {
-    redirect(`/select-org`);
+    redirect(`/select-workspace`);
   }
 
-  const { organization } = await api.organization.getOrganizationById.query({
-    organizationId,
+  const { workspace } = await api.workspace.getWorkspaceById.query({
+    workspaceId,
   });
 
   return (
     <div className="mb-20 w-full">
       <Suspense fallback={<InfoSkeleton />}>
-        <Info organization={organization} />
+        <Info workspace={workspace} />
       </Suspense>
       <Separator className="my-4" />
       <div className="px-2 md:px-4">
         <Suspense fallback={<BoardList.Skeleton />}>
-          <BoardList boards={organization?.boards} />
+          <BoardList boards={workspace?.boards} />
         </Suspense>
       </div>
     </div>
   );
 };
 
-export default OrganizationIdPage;
+export default WorkspaceIdPage;

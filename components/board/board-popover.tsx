@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { BoardForm } from "@/components/board/board-form";
+import { Workspace } from "@/server/db/schema";
 
 interface BoardPopoverProps {
   children: React.ReactNode;

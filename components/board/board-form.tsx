@@ -35,7 +35,17 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
   const utils = api.useUtils();
   const params = useParams();
 
-  const organizationId = params.organizationId as string;
+  let workspaceId: string;
+
+  // If no workspaceId is provided, get the first workspace
+  if (!params.workspaceId) {
+    const { data } = api.workspace.findFistByUserId.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+    });
+    workspaceId = data?.workspace?.id as string;
+  } else {
+    workspaceId = params.workspaceId as string;
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +72,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     createBoard({
       ...values,
-      organizationId,
+      workspaceId,
     });
   };
 

@@ -5,17 +5,17 @@ import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { member, organization } from "@/server/db/schema";
+import { member, workspace } from "@/server/db/schema";
 
-export const organizationRouter = createTRPCRouter({
+export const workspaceRouter = createTRPCRouter({
   findFistByUserId: publicProcedure.query(async ({ ctx }) => {
     const { session } = await getUserAuth();
 
-    const org = await ctx.db.query.organization.findFirst({
-      where: eq(organization.userId, session?.user.id!),
+    const w = await ctx.db.query.workspace.findFirst({
+      where: eq(workspace.userId, session?.user.id!),
     });
 
-    return { organization: org };
+    return { workspace: w };
   }),
 
   create: publicProcedure
@@ -25,85 +25,84 @@ export const organizationRouter = createTRPCRouter({
       const { name, imageUrl } = input;
 
       try {
-        await ctx.db.insert(organization).values({
+        await ctx.db.insert(workspace).values({
           name,
           imageUrl,
           userId: session?.user.id!,
           inviteCode: createId(),
         });
 
-        const org = await ctx.db.query.organization.findFirst({
-          where: eq(organization.userId, session?.user.id!),
-          orderBy: (organization, { desc }) => [desc(organization.createdAt)],
+        const w = await ctx.db.query.workspace.findFirst({
+          where: eq(workspace.userId, session?.user.id!),
+          orderBy: (workspace, { desc }) => [desc(workspace.createdAt)],
         });
 
-        if (!org) {
+        if (!w) {
           throw new TRPCError({ code: "BAD_REQUEST" });
         }
 
         await ctx.db.insert(member).values({
           userId: session?.user.id!,
           role: "ADMIN",
-          organizationId: org.id,
+          workspaceId: w.id,
         });
 
         return { success: true };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create new organization",
+          message: "Failed to create new workspace",
         });
       }
     }),
 
   findMember: publicProcedure
-    .input(z.object({ organizationId: z.string() }))
+    .input(z.object({ workspaceId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { session } = await getUserAuth();
-      const { organizationId } = input;
+      const { workspaceId } = input;
 
-      const t = await ctx.db.query.member.findFirst({
+      const m = await ctx.db.query.member.findFirst({
         where: and(
-          eq(member.organizationId, organizationId),
+          eq(member.workspaceId, workspaceId),
           eq(member.userId, session?.user.id!)
         ),
       });
 
-      return { member: t };
+      return { member: m };
     }),
 
   getUserMemberships: publicProcedure.query(async ({ ctx }) => {
     const { session } = await getUserAuth();
 
-    const organizations = await ctx.db.query.member.findMany({
+    const workspaces = await ctx.db.query.member.findMany({
       where: eq(member.userId, session?.user.id!),
       columns: {
-        organizationId: true,
+        workspaceId: true,
       },
     });
 
-    const organizationIds: string[] = organizations.map(
-      (org) => org.organizationId
-    );
+    const workspaceIds: string[] = workspaces.map((org) => org.workspaceId);
 
-    const userMemberships = await ctx.db.query.organization.findMany({
-      where: inArray(organization.id, organizationIds),
+    const userMemberships = await ctx.db.query.workspace.findMany({
+      where: inArray(workspace.id, workspaceIds),
     });
 
     return userMemberships;
   }),
 
-  getOrganizationById: publicProcedure
-    .input(z.object({ organizationId: z.string() }))
+  getWorkspaceById: publicProcedure
+    .input(z.object({ workspaceId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { organizationId } = input;
-      const org = await ctx.db.query.organization.findFirst({
-        where: eq(organization.id, organizationId),
+      const { workspaceId } = input;
+
+      const w = await ctx.db.query.workspace.findFirst({
+        where: eq(workspace.id, workspaceId),
         with: {
           boards: true,
         },
       });
 
-      return { organization: org };
+      return { workspace: w };
     }),
 });

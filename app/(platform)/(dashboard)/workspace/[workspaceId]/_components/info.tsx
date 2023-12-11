@@ -4,14 +4,14 @@ import Image from "next/image";
 import { CreditCard } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { Organization } from "@/server/db/schema";
+import { Workspace } from "@/server/db/schema";
 
 interface InfoProps {
-  organization: Organization | undefined;
+  workspace: Workspace | undefined;
 }
 
-export const Info = ({ organization }: InfoProps) => {
-  // if (organization === undefined) {
+export const Info = ({ workspace }: InfoProps) => {
+  // if (workspace === undefined) {
   //   return <Info.Skeleton />;
   // }
 
@@ -20,13 +20,13 @@ export const Info = ({ organization }: InfoProps) => {
       <div className="relative h-[60px] w-[60px]">
         <Image
           fill
-          src={organization?.imageUrl!}
-          alt={organization?.name!}
+          src={workspace?.imageUrl!}
+          alt={workspace?.name!}
           className="rounded-md object-cover"
         />
       </div>
       <div className="space-y-1">
-        <p className="text-xl font-semibold">{organization?.name}</p>
+        <p className="text-xl font-semibold">{workspace?.name}</p>
         <div className="flex items-center text-xs text-muted-foreground">
           <CreditCard className="mr-1 h-3 w-3" />
           Free

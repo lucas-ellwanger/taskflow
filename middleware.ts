@@ -8,10 +8,10 @@ export default authMiddleware({
   publicRoutes: ["/", "/api/edgestore", "/api/webhook"],
   afterAuth(auth, req) {
     if (auth.userId && auth.isPublicRoute) {
-      let path = "/select-org";
+      let path = "/select-workspace";
 
-      const orgSelection = new URL(path, req.url);
-      return NextResponse.redirect(orgSelection);
+      const workspaceSelection = new URL(path, req.url);
+      return NextResponse.redirect(workspaceSelection);
     }
 
     if (!auth.userId && !auth.isPublicRoute) {

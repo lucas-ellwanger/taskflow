@@ -6,15 +6,14 @@ import {
   int,
   mysqlEnum,
   mysqlTableCreator,
-  serial,
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
 
 export const mysqlTable = mysqlTableCreator((name) => `taskflow_${name}`);
 
-export const organization = mysqlTable(
-  "organization",
+export const workspace = mysqlTable(
+  "workspace",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
@@ -31,13 +30,13 @@ export const organization = mysqlTable(
       .notNull(),
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
-  (organization) => ({
-    id_index: index("id_index").on(organization.id),
-    user_id_index: index("user_id_index").on(organization.userId),
+  (workspace) => ({
+    id_index: index("id_index").on(workspace.id),
+    user_id_index: index("user_id_index").on(workspace.userId),
   })
 );
 
-export const organizationRelations = relations(organization, ({ many }) => ({
+export const workspaceRelations = relations(workspace, ({ many }) => ({
   members: many(member),
   boards: many(board),
 }));
@@ -54,7 +53,7 @@ export const member = mysqlTable(
       .$default(() => "MEMBER"),
 
     userId: varchar("user_id", { length: 36 }).notNull(),
-    organizationId: varchar("organization_id", { length: 256 }).notNull(),
+    workspaceId: varchar("workspace_id", { length: 256 }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -63,16 +62,14 @@ export const member = mysqlTable(
   },
   (member) => ({
     user_id_index: index("user_id_index").on(member.userId),
-    organization_id_index: index("organization_id_index").on(
-      member.organizationId
-    ),
+    workspace_id_index: index("workspace_id_index").on(member.workspaceId),
   })
 );
 
 export const memberRelations = relations(member, ({ one }) => ({
-  organization: one(organization, {
-    fields: [member.organizationId],
-    references: [organization.id],
+  workspace: one(workspace, {
+    fields: [member.workspaceId],
+    references: [workspace.id],
   }),
 }));
 
@@ -90,7 +87,7 @@ export const board = mysqlTable(
     imageUserName: varchar("image_user_name", { length: 256 }).notNull(),
     imageLinkHTML: varchar("image_link_html", { length: 256 }).notNull(),
 
-    organizationId: varchar("organization_id", { length: 36 }).notNull(),
+    workspaceId: varchar("workspace_id", { length: 36 }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -98,16 +95,14 @@ export const board = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (board) => ({
-    organization_id_index: index("organization_id_index").on(
-      board.organizationId
-    ),
+    workspace_id_index: index("workspace_id_index").on(board.workspaceId),
   })
 );
 
 export const boardRelations = relations(board, ({ one, many }) => ({
-  organization: one(organization, {
-    fields: [board.organizationId],
-    references: [organization.id],
+  workspace: one(workspace, {
+    fields: [board.workspaceId],
+    references: [workspace.id],
   }),
   lists: many(list),
 }));
@@ -187,7 +182,7 @@ export const auditLog = mysqlTable(
     userImage: varchar("user_image", { length: 256 }).notNull(),
     userName: varchar("user_name", { length: 256 }).notNull(),
 
-    organizationId: varchar("organization_id", { length: 36 }).notNull(),
+    workspaceId: varchar("workspace_id", { length: 36 }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -195,21 +190,19 @@ export const auditLog = mysqlTable(
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (auditLog) => ({
-    organization_id_index: index("organization_id_index").on(
-      auditLog.organizationId
-    ),
+    workspace_id_index: index("workspace_id_index").on(auditLog.workspaceId),
   })
 );
 
 export const auditLogRelations = relations(auditLog, ({ one }) => ({
-  organization: one(organization, {
-    fields: [auditLog.organizationId],
-    references: [organization.id],
+  workspace: one(workspace, {
+    fields: [auditLog.workspaceId],
+    references: [workspace.id],
   }),
 }));
 
-export const orgLimit = mysqlTable(
-  "org_limit",
+export const workspaceLimit = mysqlTable(
+  "workspace_limit",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
@@ -217,31 +210,29 @@ export const orgLimit = mysqlTable(
       .$defaultFn(() => createId()),
     count: int("limit").notNull().default(0),
 
-    organizationId: varchar("organization_id", { length: 36 })
-      .notNull()
-      .unique(),
+    workspaceId: varchar("workspace_id", { length: 36 }).notNull().unique(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
-  (orgLimit) => ({
-    organization_id_index: index("organization_id_index").on(
-      orgLimit.organizationId
+  (workspaceLimit) => ({
+    workspace_id_index: index("workspace_id_index").on(
+      workspaceLimit.workspaceId
     ),
   })
 );
 
-export const orgLimitRelations = relations(orgLimit, ({ one }) => ({
-  organization: one(organization, {
-    fields: [orgLimit.organizationId],
-    references: [organization.id],
+export const workspaceLimitRelations = relations(workspaceLimit, ({ one }) => ({
+  workspace: one(workspace, {
+    fields: [workspaceLimit.workspaceId],
+    references: [workspace.id],
   }),
 }));
 
-export const orgSubscription = mysqlTable(
-  "org_subscription",
+export const workspaceSubscription = mysqlTable(
+  "workspace_subscription",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
@@ -254,32 +245,30 @@ export const orgSubscription = mysqlTable(
     stripePriceId: varchar("stripe_price_id", { length: 36 }),
     stripeCurrentPeriodEnd: datetime("stripe_current_period_end"),
 
-    organizationId: varchar("organization_id", { length: 36 })
-      .notNull()
-      .unique(),
+    workspaceId: varchar("workspace_id", { length: 36 }).notNull().unique(),
   },
-  (orgSubscription) => ({
-    organization_id_index: index("org_id_index").on(
-      orgSubscription.organizationId
+  (workspaceSubscription) => ({
+    workspace_id_index: index("workspace_id_index").on(
+      workspaceSubscription.workspaceId
     ),
   })
 );
 
-export const orgSubscriptionRelations = relations(
-  orgSubscription,
+export const workspaceSubscriptionRelations = relations(
+  workspaceSubscription,
   ({ one }) => ({
-    organization: one(organization, {
-      fields: [orgSubscription.organizationId],
-      references: [organization.id],
+    workspace: one(workspace, {
+      fields: [workspaceSubscription.workspaceId],
+      references: [workspace.id],
     }),
   })
 );
 
-export type Organization = typeof organization.$inferSelect;
+export type Workspace = typeof workspace.$inferSelect;
 export type Board = typeof board.$inferSelect;
 export type Member = typeof member.$inferSelect;
 export type List = typeof list.$inferSelect;
 export type Card = typeof card.$inferSelect;
 export type AuditLog = typeof auditLog.$inferSelect;
-export type OrgLimit = typeof orgLimit.$inferSelect;
-export type OrgSubscription = typeof orgSubscription.$inferSelect;
+export type WorkspaceLimit = typeof workspaceLimit.$inferSelect;
+export type WorkspaceSubscription = typeof workspaceSubscription.$inferSelect;
