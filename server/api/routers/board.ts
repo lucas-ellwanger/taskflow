@@ -47,7 +47,7 @@ export const boardRouter = createTRPCRouter({
       }
 
       try {
-        await ctx.db.insert(board).values({
+        const newBoard = await ctx.db.insert(board).values({
           title,
           organizationId,
           imageId,
@@ -57,7 +57,7 @@ export const boardRouter = createTRPCRouter({
           imageLinkHTML,
         });
 
-        return { data: input };
+        return { data: input, id: newBoard.insertId };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
