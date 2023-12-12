@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
+import { getUserAuth } from "@/lib/auth/utils";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
 
@@ -14,19 +15,27 @@ interface WorkspaceIdPageProps {
 }
 
 const WorkspaceIdPage = async ({ params }: WorkspaceIdPageProps) => {
+  const { session } = await getUserAuth();
   const { workspaceId } = params;
-
-  const { member } = await api.workspace.findMember.query({
-    workspaceId,
-  });
-
-  if (!member) {
-    redirect(`/select-workspace`);
-  }
 
   const { workspace } = await api.workspace.getWorkspaceById.query({
     workspaceId,
   });
+
+  if (!workspace) {
+    redirect(`/select-workspace`);
+  }
+
+  // if user is not the workspace owner, checks if user is a member
+  if (workspace.userId !== session?.user.id) {
+    const { member } = await api.workspace.findMember.query({
+      workspaceId,
+    });
+
+    if (!member) {
+      redirect(`/select-workspace`);
+    }
+  }
 
   return (
     <div className="mb-20 w-full">
