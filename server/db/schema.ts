@@ -117,7 +117,7 @@ export const list = mysqlTable(
       .notNull()
       .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
-    order: int("order").notNull(),
+    position: int("position").notNull(),
 
     boardId: varchar("board_id", { length: 36 }).notNull(),
 
@@ -147,7 +147,7 @@ export const card = mysqlTable(
       .notNull()
       .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
-    order: int("order").notNull(),
+    position: int("position").notNull(),
     description: varchar("description", { length: 256 }),
 
     listId: varchar("list_id", { length: 36 }).notNull(),

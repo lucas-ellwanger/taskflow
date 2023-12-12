@@ -1,12 +1,11 @@
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board, updateBoardParams } from "@/server/db/schema";
+import { board, list, updateBoardParams } from "@/server/db/schema";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure

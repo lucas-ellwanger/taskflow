@@ -1,4 +1,5 @@
 import { boardRouter } from "@/server/api/routers/board";
+import { listRouter } from "@/server/api/routers/list";
 import { workspaceRouter } from "@/server/api/routers/workspace";
 import { createTRPCRouter } from "@/server/api/trpc";
 
@@ -10,6 +11,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
 export const appRouter = createTRPCRouter({
   workspace: workspaceRouter,
   board: boardRouter,
+  list: listRouter,
 });
 
 // export type definition of API
