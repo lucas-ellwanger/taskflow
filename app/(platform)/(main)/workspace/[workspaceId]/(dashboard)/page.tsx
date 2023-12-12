@@ -1,7 +1,5 @@
 import { Suspense } from "react";
-import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { startCase } from "lodash";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { Separator } from "@/components/ui/separator";
@@ -9,18 +7,6 @@ import { api } from "@/trpc/server";
 
 import { BoardList } from "./_components/board-list";
 import { Info, InfoSkeleton } from "./_components/info";
-
-export async function generateMetadata({
-  params,
-}: WorkspaceIdPageProps): Promise<Metadata> {
-  const { name } = await api.workspace.getName.query({
-    workspaceId: params.workspaceId,
-  });
-
-  return {
-    title: startCase(name || "Workspace"),
-  };
-}
 
 interface WorkspaceIdPageProps {
   params: {

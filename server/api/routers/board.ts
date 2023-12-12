@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
@@ -79,16 +79,16 @@ export const boardRouter = createTRPCRouter({
       }
     }),
 
-  getTitle: publicProcedure
-    .input(z.object({ boardId: z.string() }))
+  getBoard: publicProcedure
+    .input(z.object({ boardId: z.string(), workspaceId: z.string() }))
     .query(async ({ ctx, input }) => {
       const b = await ctx.db.query.board.findFirst({
-        where: eq(board.id, input.boardId),
-        columns: {
-          title: true,
-        },
+        where: and(
+          eq(board.id, input.boardId),
+          eq(board.workspaceId, input.workspaceId)
+        ),
       });
 
-      return { title: b?.title.toLocaleLowerCase() };
+      return { board: b };
     }),
 });

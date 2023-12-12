@@ -1,6 +1,25 @@
+import { Metadata } from "next";
+import { startCase } from "lodash";
+
 import { api } from "@/trpc/server";
 
 import { Sidebar } from "../../../_components/sidebar";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: {
+    workspaceId: string;
+  };
+}): Promise<Metadata> {
+  const { name } = await api.workspace.getName.query({
+    workspaceId: params.workspaceId,
+  });
+
+  return {
+    title: startCase(name || "Workspace"),
+  };
+}
 
 const WorkspaceIdLayout = async ({
   children,
