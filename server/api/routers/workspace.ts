@@ -105,4 +105,17 @@ export const workspaceRouter = createTRPCRouter({
 
       return { workspace: w };
     }),
+
+  getName: publicProcedure
+    .input(z.object({ workspaceId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const w = await ctx.db.query.workspace.findFirst({
+        where: eq(workspace.id, input.workspaceId),
+        columns: {
+          name: true,
+        },
+      });
+
+      return { name: w?.name.toLocaleLowerCase() };
+    }),
 });

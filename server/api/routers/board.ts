@@ -78,4 +78,17 @@ export const boardRouter = createTRPCRouter({
         });
       }
     }),
+
+  getTitle: publicProcedure
+    .input(z.object({ boardId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const b = await ctx.db.query.board.findFirst({
+        where: eq(board.id, input.boardId),
+        columns: {
+          title: true,
+        },
+      });
+
+      return { title: b?.title.toLocaleLowerCase() };
+    }),
 });

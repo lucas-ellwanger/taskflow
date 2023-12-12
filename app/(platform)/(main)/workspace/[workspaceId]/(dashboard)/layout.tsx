@@ -2,7 +2,15 @@ import { api } from "@/trpc/server";
 
 import { Sidebar } from "../../../_components/sidebar";
 
-const WorkspaceLayout = async ({ children }: { children: React.ReactNode }) => {
+const WorkspaceIdLayout = async ({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: {
+    workspaceId: string;
+  };
+}) => {
   const workspaces = await api.workspace.getUserMemberships.query();
 
   return (
@@ -17,4 +25,4 @@ const WorkspaceLayout = async ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default WorkspaceLayout;
+export default WorkspaceIdLayout;
