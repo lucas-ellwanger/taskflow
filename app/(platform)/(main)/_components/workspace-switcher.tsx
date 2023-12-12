@@ -65,7 +65,7 @@ export const WorkspaceSwitcher = ({
           aria-expanded={open}
           aria-label="Select workspace"
           className={cn(
-            "w-[200px] justify-between gap-x-2 border-0 pl-0 pr-1.5",
+            "w-[170px] justify-between gap-x-2 border-0 pl-0 pr-1.5",
             className
           )}
         >

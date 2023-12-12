@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -109,6 +110,43 @@ export const boardRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update board",
+        });
+      }
+    }),
+
+  deleteBoard: publicProcedure
+    .input(
+      z.object({
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      try {
+        await ctx.db
+          .delete(board)
+          .where(
+            and(
+              eq(board.id, input.boardId),
+              eq(board.workspaceId, input.workspaceId)
+            )
+          );
+
+        revalidatePath(`/workspace/${input.workspaceId}`);
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete board",
         });
       }
     }),
