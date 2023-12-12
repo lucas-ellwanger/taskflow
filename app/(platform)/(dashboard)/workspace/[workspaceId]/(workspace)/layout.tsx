@@ -1,6 +1,6 @@
 import { api } from "@/trpc/server";
 
-import { Sidebar } from "../_components/sidebar";
+import { Sidebar } from "../../../_components/sidebar";
 
 const WorkspaceLayout = async ({ children }: { children: React.ReactNode }) => {
   const workspaces = await api.workspace.getUserMemberships.query();

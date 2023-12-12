@@ -35,17 +35,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
   const utils = api.useUtils();
   const params = useParams();
 
-  let workspaceId: string;
-
-  // If no workspaceId is provided, get the first workspace
-  if (!params.workspaceId) {
-    const { data } = api.workspace.findFistByUserId.useQuery(undefined, {
-      refetchOnWindowFocus: false,
-    });
-    workspaceId = data?.workspace?.id as string;
-  } else {
-    workspaceId = params.workspaceId as string;
-  }
+  const workspaceId = params.workspaceId as string;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +52,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
       // await utils.board.getBoards.invalidate();
       toast.success("Board created!");
       closeRef.current?.click();
-      router.push(`/board/${createdBoard.id}`);
+      router.push(`/workspace/${workspaceId}/board/${createdBoard.id}`);
     },
     onError: (error) => {
       toast.error(error.message);

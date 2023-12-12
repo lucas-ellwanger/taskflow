@@ -11,10 +11,6 @@ interface InfoProps {
 }
 
 export const Info = ({ workspace }: InfoProps) => {
-  // if (workspace === undefined) {
-  //   return <Info.Skeleton />;
-  // }
-
   return (
     <div className="flex items-center gap-x-4">
       <div className="relative h-[60px] w-[60px]">

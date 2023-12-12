@@ -21,7 +21,7 @@ export const BoardList = ({ boards }: BoardListProps) => {
         {boards?.map((board) => (
           <Link
             key={board.id}
-            href={`/board/${board.id}`}
+            href={`/workspace/${board.workspaceId}/board/${board.id}`}
             style={{ backgroundImage: `url(${board.imageThumbUrl})` }}
             className="group relative aspect-video h-full w-full overflow-hidden rounded-md bg-muted bg-cover bg-center bg-no-repeat p-2"
           >
