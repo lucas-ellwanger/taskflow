@@ -9,6 +9,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export const mysqlTable = mysqlTableCreator((name) => `taskflow_${name}`);
 
@@ -265,10 +267,35 @@ export const workspaceSubscriptionRelations = relations(
 );
 
 export type Workspace = typeof workspace.$inferSelect;
+
 export type Board = typeof board.$inferSelect;
+
 export type Member = typeof member.$inferSelect;
+
 export type List = typeof list.$inferSelect;
+
 export type Card = typeof card.$inferSelect;
+
 export type AuditLog = typeof auditLog.$inferSelect;
+
 export type WorkspaceLimit = typeof workspaceLimit.$inferSelect;
+
 export type WorkspaceSubscription = typeof workspaceSubscription.$inferSelect;
+
+// Schema for boards - used to validate API requests
+// export const insertBoardSchema = createInsertSchema(board);
+
+// export const insertTeamParams = createSelectSchema(board, {}).omit({
+//   id: true,
+//   userId: true
+// });
+
+export const updateBoardSchema = createSelectSchema(board);
+
+export const updateBoardParams = createSelectSchema(board, {}).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for boards - used to type API request params and within Components
+export type UpdateBoardParams = z.infer<typeof updateBoardParams>;

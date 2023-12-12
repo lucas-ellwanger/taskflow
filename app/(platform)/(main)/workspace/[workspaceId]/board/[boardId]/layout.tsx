@@ -4,6 +4,8 @@ import { startCase } from "lodash";
 
 import { api } from "@/trpc/server";
 
+import { BoardNavbar } from "./_components/board-navbar";
+
 export async function generateMetadata({
   params,
 }: {
@@ -49,6 +51,8 @@ const BoardIdLayout = async ({ children, params }: BoardIdLayoutProps) => {
       className="relative h-full bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${board.imageFullUrl})` }}
     >
+      <BoardNavbar board={board} />
+      <div className="absolute inset-0 bg-black/10" />
       <main className="relative h-full pt-28">{children}</main>
     </div>
   );

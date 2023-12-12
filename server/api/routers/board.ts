@@ -1,10 +1,11 @@
+import { revalidatePath } from "next/cache";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board } from "@/server/db/schema";
+import { board, updateBoardParams } from "@/server/db/schema";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
@@ -75,6 +76,39 @@ export const boardRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create board",
+        });
+      }
+    }),
+
+  updateBoard: publicProcedure
+    .input(updateBoardParams)
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      try {
+        await ctx.db
+          .update(board)
+          .set(input)
+          .where(
+            and(
+              eq(board.id, input.id),
+              eq(board.workspaceId, input.workspaceId)
+            )
+          );
+
+        revalidatePath(`/workspace/${input.workspaceId}/board/${input.id}`);
+        return { success: true, data: input };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update board",
         });
       }
     }),
