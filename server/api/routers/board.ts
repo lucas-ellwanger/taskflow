@@ -80,8 +80,14 @@ export const boardRouter = createTRPCRouter({
       }
     }),
 
-  updateBoard: publicProcedure
-    .input(updateBoardParams)
+  updateTitle: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        workspaceId: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const { session } = await getUserAuth();
 
@@ -95,7 +101,9 @@ export const boardRouter = createTRPCRouter({
       try {
         await ctx.db
           .update(board)
-          .set(input)
+          .set({
+            title: input.title,
+          })
           .where(
             and(
               eq(board.id, input.id),

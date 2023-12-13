@@ -87,38 +87,42 @@ export const listRouter = createTRPCRouter({
       }
     }),
 
-  // updateBoard: publicProcedure
-  //   .input(updateBoardParams)
-  //   .mutation(async ({ ctx, input }) => {
-  //     const { session } = await getUserAuth();
+  updateTitle: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
 
-  //     if (!session) {
-  //       throw new TRPCError({
-  //         code: "UNAUTHORIZED",
-  //         message: "Unauthorized",
-  //       });
-  //     }
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
 
-  //     try {
-  //       await ctx.db
-  //         .update(board)
-  //         .set(input)
-  //         .where(
-  //           and(
-  //             eq(board.id, input.id),
-  //             eq(board.workspaceId, input.workspaceId)
-  //           )
-  //         );
+      try {
+        await ctx.db
+          .update(list)
+          .set({
+            title: input.title,
+          })
+          .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)));
 
-  //       revalidatePath(`/workspace/${input.workspaceId}/board/${input.id}`);
-  //       return { success: true, data: input };
-  //     } catch (error) {
-  //       throw new TRPCError({
-  //         code: "INTERNAL_SERVER_ERROR",
-  //         message: "Failed to update board",
-  //       });
-  //     }
-  //   }),
+        revalidatePath(`/workspace/${input.workspaceId}/board/${input.id}`);
+        return { success: true, data: input };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update board",
+        });
+      }
+    }),
 
   // deleteBoard: publicProcedure
   //   .input(

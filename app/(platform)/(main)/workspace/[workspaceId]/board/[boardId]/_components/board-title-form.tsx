@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Board, updateBoardSchema } from "@/server/db/schema";
+import { Board } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
 interface BoardTitleFormProps {
@@ -31,7 +31,7 @@ export const BoardTitleForm = ({ board }: BoardTitleFormProps) => {
     setIsEditing(false);
   };
 
-  const { mutate: updateBoard, isLoading } = api.board.updateBoard.useMutation({
+  const { mutate: updateBoard, isLoading } = api.board.updateTitle.useMutation({
     onSuccess: ({ data }) => {
       disableEditing();
       setTitle(data.title);
@@ -45,13 +45,14 @@ export const BoardTitleForm = ({ board }: BoardTitleFormProps) => {
   const onSubmit = (formData: FormData) => {
     const newTitle = formData.get("title") as string;
 
-    const newBoard = updateBoardSchema.parse({
-      ...board,
-      title: newTitle,
-    });
+    if (newTitle === title) {
+      return disableEditing();
+    }
 
     updateBoard({
-      ...newBoard,
+      id: board.id,
+      title: newTitle,
+      workspaceId: board.workspaceId,
     });
   };
 
