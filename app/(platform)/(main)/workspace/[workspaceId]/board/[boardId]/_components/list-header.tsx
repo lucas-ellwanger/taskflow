@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementRef, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";
 
@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input";
 import { List } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
+import { ListOptions } from "./list-options";
+
 interface ListHeaderProps {
   list: List;
 }
 
 export const ListHeader = ({ list }: ListHeaderProps) => {
-  const router = useRouter();
   const params = useParams();
 
   const [title, setTitle] = useState(list.title);
@@ -45,7 +46,7 @@ export const ListHeader = ({ list }: ListHeaderProps) => {
     onSuccess: ({ data }) => {
       disableEditing();
       setTitle(data.title);
-      toast.success(`List "${data.title}" updated!`);
+      toast.success(`List renamed to "${data.title}"`);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -92,11 +93,12 @@ export const ListHeader = ({ list }: ListHeaderProps) => {
       ) : (
         <div
           onClick={enableEditing}
-          className="h-7 w-full border-transparent px-2.5 py-[0.30rem] text-sm font-medium"
+          className="h-7 w-full border-transparent px-2.5 py-1 text-sm font-medium"
         >
           {title}
         </div>
       )}
+      <ListOptions onAddCard={() => {}} list={list} />
     </div>
   );
 };

@@ -6,11 +6,10 @@ import {
   int,
   mysqlEnum,
   mysqlTableCreator,
+  serial,
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const mysqlTable = mysqlTableCreator((name) => `taskflow_${name}`);
 
@@ -112,10 +111,7 @@ export const boardRelations = relations(board, ({ one, many }) => ({
 export const list = mysqlTable(
   "list",
   {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .notNull()
-      .$defaultFn(() => createId()),
+    id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     position: int("position").notNull(),
 
@@ -142,10 +138,7 @@ export const listRelations = relations(list, ({ one, many }) => ({
 export const card = mysqlTable(
   "card",
   {
-    id: varchar("id", { length: 36 })
-      .primaryKey()
-      .notNull()
-      .$defaultFn(() => createId()),
+    id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     position: int("position").notNull(),
     description: varchar("description", { length: 256 }),
@@ -281,21 +274,3 @@ export type AuditLog = typeof auditLog.$inferSelect;
 export type WorkspaceLimit = typeof workspaceLimit.$inferSelect;
 
 export type WorkspaceSubscription = typeof workspaceSubscription.$inferSelect;
-
-// Schema for boards - used to validate API requests
-// export const insertBoardSchema = createInsertSchema(board);
-
-// export const insertTeamParams = createSelectSchema(board, {}).omit({
-//   id: true,
-//   userId: true
-// });
-
-export const updateBoardSchema = createSelectSchema(board);
-
-export const updateBoardParams = createSelectSchema(board, {}).omit({
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Types for boards - used to type API request params and within Components
-export type UpdateBoardParams = z.infer<typeof updateBoardParams>;

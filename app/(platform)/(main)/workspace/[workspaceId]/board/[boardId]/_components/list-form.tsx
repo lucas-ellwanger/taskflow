@@ -39,9 +39,9 @@ export const ListForm = () => {
 
   const { mutate: createList, isLoading } = api.list.createList.useMutation({
     onSuccess: ({ data }) => {
-      toast.success(`List "${data.title}" created`);
       disableEditing();
       router.refresh();
+      toast.success(`List "${data.title}" created`);
     },
     onError: (error) => {
       toast.error(error.message);

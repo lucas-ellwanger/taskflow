@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board, list } from "@/server/db/schema";
+import { board, card, list } from "@/server/db/schema";
 
 export const listRouter = createTRPCRouter({
   getListsWithCards: publicProcedure
@@ -90,7 +90,7 @@ export const listRouter = createTRPCRouter({
   updateTitle: publicProcedure
     .input(
       z.object({
-        id: z.string(),
+        id: z.number(),
         title: z.string(),
         boardId: z.string(),
         workspaceId: z.string(),
@@ -124,40 +124,114 @@ export const listRouter = createTRPCRouter({
       }
     }),
 
-  // deleteBoard: publicProcedure
-  //   .input(
-  //     z.object({
-  //       boardId: z.string(),
-  //       workspaceId: z.string(),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const { session } = await getUserAuth();
+  deleteList: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
 
-  //     if (!session) {
-  //       throw new TRPCError({
-  //         code: "UNAUTHORIZED",
-  //         message: "Unauthorized",
-  //       });
-  //     }
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
 
-  //     try {
-  //       await ctx.db
-  //         .delete(board)
-  //         .where(
-  //           and(
-  //             eq(board.id, input.boardId),
-  //             eq(board.workspaceId, input.workspaceId)
-  //           )
-  //         );
+      try {
+        await ctx.db
+          .delete(list)
+          .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)));
 
-  //       revalidatePath(`/workspace/${input.workspaceId}`);
-  //       return { success: true };
-  //     } catch (error) {
-  //       throw new TRPCError({
-  //         code: "INTERNAL_SERVER_ERROR",
-  //         message: "Failed to delete board",
-  //       });
-  //     }
-  //   }),
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete list",
+        });
+      }
+    }),
+
+  copyList: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        const listToCopy = await ctx.db.query.list.findFirst({
+          where: and(eq(list.id, input.id), eq(list.boardId, input.boardId)),
+          with: {
+            cards: true,
+          },
+        });
+
+        if (!listToCopy) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "List not found",
+          });
+        }
+
+        const lastList = await ctx.db.query.list.findFirst({
+          where: eq(list.boardId, input.boardId),
+          orderBy: (list, { desc }) => [desc(list.position)],
+          columns: {
+            position: true,
+          },
+        });
+
+        const newOrder = lastList ? lastList.position + 1 : 1;
+
+        const newList = await ctx.db.insert(list).values({
+          boardId: listToCopy.boardId,
+          title: `${listToCopy.title} - Copy`,
+          position: newOrder,
+        });
+
+        const newListCards = listToCopy.cards.map((card) => {
+          return {
+            title: card.title,
+            description: card.description,
+            position: card.position,
+            listId: newList.insertId,
+          };
+        });
+
+        if (newListCards.length > 0) {
+          await ctx.db.insert(card).values(newListCards);
+        }
+
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true, data: listToCopy };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to copy list",
+        });
+      }
+    }),
 });

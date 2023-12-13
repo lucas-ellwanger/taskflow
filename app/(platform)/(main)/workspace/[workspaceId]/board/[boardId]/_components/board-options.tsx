@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { MoreHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 
