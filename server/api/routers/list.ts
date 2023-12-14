@@ -46,6 +46,8 @@ export const listRouter = createTRPCRouter({
         });
       }
 
+      // TODO: check if user is member of workspace and have permission
+
       try {
         const b = await ctx.db.query.board.findFirst({
           where: and(
@@ -69,15 +71,17 @@ export const listRouter = createTRPCRouter({
           },
         });
 
-        const newOrder = lastList ? lastList.position + 1 : 1;
+        const newPosition = lastList ? lastList.position + 1 : 1;
 
         await ctx.db.insert(list).values({
           title: input.title,
           boardId: input.boardId,
-          position: newOrder,
+          position: newPosition,
         });
 
-        revalidatePath(`/workspace/${input.boardId}/board/${input.boardId}`);
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
         return { success: true, data: input };
       } catch (error) {
         throw new TRPCError({
@@ -105,6 +109,8 @@ export const listRouter = createTRPCRouter({
           message: "Unauthorized",
         });
       }
+
+      // TODO: check if user is member of workspace and have permission
 
       try {
         await ctx.db
@@ -142,10 +148,14 @@ export const listRouter = createTRPCRouter({
         });
       }
 
+      // TODO: check if user is member of workspace and have permission
+
       try {
         await ctx.db
           .delete(list)
           .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)));
+
+        await ctx.db.delete(card).where(eq(card.listId, input.id));
 
         revalidatePath(
           `/workspace/${input.workspaceId}/board/${input.boardId}`
@@ -215,7 +225,7 @@ export const listRouter = createTRPCRouter({
             title: card.title,
             description: card.description,
             position: card.position,
-            listId: newList.insertId,
+            listId: Number(newList.insertId),
           };
         });
 

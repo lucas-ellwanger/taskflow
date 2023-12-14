@@ -1,23 +1,18 @@
 "use client";
 
 import { ElementRef, forwardRef, KeyboardEventHandler, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/trpc/react";
 
 interface CardFormProps {
   listId: number;
@@ -27,12 +22,13 @@ interface CardFormProps {
 }
 
 const formSchema = z.object({
-  title: z.string().min(2, { message: "Title is required" }),
+  title: z.string(),
 });
 
 export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
   ({ listId, isEditing, enableEditing, disableEditing }, ref) => {
     const params = useParams();
+    const router = useRouter();
     const formRef = useRef<ElementRef<"form">>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -56,28 +52,36 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
     ) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        formRef.current?.requestSubmit();
+        form.handleSubmit(onSubmit)();
       }
     };
 
-    // const { mutate: createBoard, isLoading } = api.board.createBoard.useMutation({
-    //   onSuccess: ({ createdBoard }) => {
-    //     // await utils.board.getBoards.invalidate();
-    //     toast.success("Board created!");
-    //     closeRef.current?.click();
-    //     router.push(`/workspace/${workspaceId}/board/${createdBoard.id}`);
-    //   },
-    //   onError: (error) => {
-    //     toast.error(error.message);
-    //   },
-    // });
+    const { mutate: createCard, isLoading } = api.card.createCard.useMutation({
+      onSuccess: ({ data }) => {
+        disableEditing();
+        form.reset();
+        router.refresh();
+        toast.success(`Card "${data.title}" created`);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-      console.log(values);
-      // createBoard({
-      //   ...values,
-      //   workspaceId,
-      // });
+    const onSubmit = ({ title }: z.infer<typeof formSchema>) => {
+      const boardId = params.boardId as string;
+      const workspaceId = params.workspaceId as string;
+
+      if (title.trim().length === 0) {
+        return disableEditing(), form.reset();
+      }
+
+      createCard({
+        title,
+        listId,
+        boardId,
+        workspaceId,
+      });
     };
 
     if (isEditing) {
@@ -103,10 +107,27 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
                       className="resize-none shadow-sm outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="flex items-center gap-x-1">
+              <Button
+                disabled={isLoading}
+                type="submit"
+                size="sm"
+                variant="primary"
+              >
+                Add card
+              </Button>
+              <Button
+                onClick={disableEditing}
+                type="reset"
+                size="sm"
+                variant="ghost"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
           </form>
         </Form>
       );

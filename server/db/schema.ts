@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
+  bigint,
   datetime,
   index,
   int,
@@ -143,7 +144,7 @@ export const card = mysqlTable(
     position: int("position").notNull(),
     description: varchar("description", { length: 256 }),
 
-    listId: varchar("list_id", { length: 36 }).notNull(),
+    listId: bigint("list_id", { mode: "number" }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
