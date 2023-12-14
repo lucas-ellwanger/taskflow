@@ -59,7 +59,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     createBoard({
       ...values,
       workspaceId,
@@ -68,7 +68,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="image"
