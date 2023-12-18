@@ -4,7 +4,7 @@ import Image from "next/image";
 import { CreditCard } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { Workspace } from "@/server/db/schema";
+import { type Workspace } from "@/server/db/schema";
 
 interface InfoProps {
   workspace: Workspace | undefined;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
+import { useRef, useState, type ElementRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -79,7 +79,12 @@ export const ListForm = () => {
             placeholder="Enter list title..."
           />
           <div className="flex items-center gap-x-1">
-            <Button type="submit" variant="primary" size="sm">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              variant="primary"
+              size="sm"
+            >
               Add list
             </Button>
             <Button

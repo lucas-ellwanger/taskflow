@@ -8,13 +8,14 @@ export default authMiddleware({
   publicRoutes: ["/", "/api/edgestore", "/api/webhook"],
   afterAuth(auth, req) {
     if (auth.userId && auth.isPublicRoute) {
-      let path = "/select-workspace";
+      const path = "/select-workspace";
 
       const workspaceSelection = new URL(path, req.url);
       return NextResponse.redirect(workspaceSelection);
     }
 
     if (!auth.userId && !auth.isPublicRoute) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return redirectToSignIn({ returnBackUrl: req.url });
     }
   },

@@ -1,12 +1,12 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
+import { useRef, useState, type ElementRef } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";
 
 import { Input } from "@/components/ui/input";
-import { List } from "@/server/db/schema";
+import { type List } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
 import { ListOptions } from "./list-options";

@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { startCase } from "lodash";
 
@@ -20,7 +20,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: startCase(board?.title || "Board"),
+    title: startCase(board?.title ?? "Board"),
   };
 }
 

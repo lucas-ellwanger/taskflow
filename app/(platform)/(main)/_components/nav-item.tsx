@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Workspace } from "@/server/db/schema";
+import { type Workspace } from "@/server/db/schema";
 
 interface NavItemProps {
   isExpanded: boolean;

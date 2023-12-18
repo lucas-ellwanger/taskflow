@@ -1,4 +1,4 @@
-import { Board } from "@/server/db/schema";
+import { type Board } from "@/server/db/schema";
 
 import { BoardOptions } from "./board-options";
 import { BoardTitleForm } from "./board-title-form";

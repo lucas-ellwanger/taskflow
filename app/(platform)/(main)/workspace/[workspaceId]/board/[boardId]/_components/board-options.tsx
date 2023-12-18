@@ -21,9 +21,11 @@ export const BoardOptions = ({ id }: BoardOptionsProps) => {
   const params = useParams();
   const router = useRouter();
 
+  const workspaceId = params.workspaceId as string;
+
   const { mutate: deleteBoard, isLoading } = api.board.deleteBoard.useMutation({
     onSuccess: () => {
-      router.push(`/workspace/${params.workspaceId}`);
+      router.push(`/workspace/${workspaceId}`);
       toast.success("Board deleted");
     },
     onError: (error) => {
@@ -32,11 +34,8 @@ export const BoardOptions = ({ id }: BoardOptionsProps) => {
   });
 
   const onDelete = () => {
-    const boardId = params.boardId as string;
-    const workspaceId = params.workspaceId as string;
-
     deleteBoard({
-      boardId,
+      boardId: id,
       workspaceId,
     });
   };

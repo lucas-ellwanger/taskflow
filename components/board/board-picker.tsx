@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -29,7 +31,7 @@ export const BoardPicker = ({ onChange, isSubmitting }: BoardPickerProps) => {
           count: 9,
         });
 
-        if (result && result.response) {
+        if (result?.response) {
           const newImages = result.response as Array<Record<string, any>>;
           setImages(newImages);
         } else {
@@ -43,7 +45,7 @@ export const BoardPicker = ({ onChange, isSubmitting }: BoardPickerProps) => {
       }
     };
 
-    fetchImages();
+    void fetchImages();
   }, []);
 
   if (isLoading) {

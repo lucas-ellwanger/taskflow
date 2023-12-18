@@ -1,6 +1,6 @@
 "use client";
 
-import { RefObject } from "react";
+import { type RefObject } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

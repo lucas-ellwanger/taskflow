@@ -1,6 +1,11 @@
 "use client";
 
-import { ElementRef, forwardRef, KeyboardEventHandler, useRef } from "react";
+import {
+  forwardRef,
+  useRef,
+  type ElementRef,
+  type KeyboardEventHandler,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
@@ -52,7 +57,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
     ) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        form.handleSubmit(onSubmit)();
+        formRef.current?.requestSubmit();
       }
     };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementRef, useRef } from "react";
+import { useRef, type ElementRef } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

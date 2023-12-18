@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementRef, useRef } from "react";
+import { useRef, type ElementRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MoreHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { List } from "@/server/db/schema";
+import { type List } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
 interface ListOptionsProps {

@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { startCase } from "lodash";
 
 import { api } from "@/trpc/server";
@@ -17,7 +17,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: startCase(name || "Workspace"),
+    title: startCase(name ?? "Workspace"),
   };
 }
 

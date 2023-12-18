@@ -1,4 +1,4 @@
-import { Card, List } from "@/server/db/schema";
+import type { Card, List } from "@/server/db/schema";
 
 export type ListWithCards = List & { cards: Card[] };
 

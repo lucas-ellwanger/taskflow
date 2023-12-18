@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Workspace } from "@/server/db/schema";
+import { type Workspace } from "@/server/db/schema";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -40,15 +40,9 @@ export const WorkspaceSwitcher = ({
 
   const [open, setOpen] = useState(false);
 
-  let currentWorkspace: Workspace | undefined;
-
-  if (!params.workspaceId) {
-    currentWorkspace = workspaces[0];
-  } else {
-    currentWorkspace = workspaces.find(
-      (workspace) => workspace.id === params.workspaceId
-    );
-  }
+  const currentWorkspace = workspaces.find(
+    (workspace) => workspace.id === params.workspaceId
+  );
 
   const onWorkspaceSelect = (workspace: { id: string; name: string }) => {
     setOpen(false);

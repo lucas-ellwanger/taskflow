@@ -1,11 +1,11 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
+import { useRef, useState, type ElementRef } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Board } from "@/server/db/schema";
+import { type Board } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
 interface BoardTitleFormProps {

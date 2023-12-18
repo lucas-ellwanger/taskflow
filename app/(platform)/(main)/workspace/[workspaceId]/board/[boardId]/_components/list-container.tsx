@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ListWithCards } from "@/lib/types";
+import { type ListWithCards } from "@/lib/types";
 
 import { ListForm } from "./list-form";
 import { ListItem } from "./list-item";

@@ -1,8 +1,8 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
+import { useRef, useState, type ElementRef } from "react";
 
-import { ListWithCards } from "@/lib/types";
+import { type ListWithCards } from "@/lib/types";
 
 import { CardForm } from "./card-form";
 import { ListHeader } from "./list-header";

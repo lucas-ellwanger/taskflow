@@ -4,7 +4,7 @@ import { HelpCircle, User2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BoardPopover } from "@/components/board/board-popover";
 import { Hint } from "@/components/hint";
-import { Board } from "@/server/db/schema";
+import { type Board } from "@/server/db/schema";
 
 interface BoardListProps {
   boards: Board[] | undefined;

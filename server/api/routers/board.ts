@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board, list, updateBoardParams } from "@/server/db/schema";
+import { board } from "@/server/db/schema";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
