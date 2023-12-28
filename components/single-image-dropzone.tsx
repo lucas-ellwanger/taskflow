@@ -103,7 +103,6 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
     );
 
     // error validation messages
-    // @ts-ignore
     const errorMessage = React.useMemo(() => {
       if (fileRejections[0]) {
         const { errors } = fileRejections[0];
@@ -123,7 +122,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="relative">
         {disabled && (
-          <div className="absolute inset-y-0 z-50 flex h-full w-full items-center justify-center bg-background/80">
+          <div className="absolute inset-y-0 z-50 flex h-full w-full items-center justify-center bg-background/10">
             <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
           </div>
         )}
