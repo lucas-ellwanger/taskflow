@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
 interface CardFormProps {
-  listId: number;
+  listId: string;
   isEditing: boolean;
   enableEditing: () => void;
   disableEditing: () => void;

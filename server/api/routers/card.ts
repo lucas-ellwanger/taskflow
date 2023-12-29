@@ -12,7 +12,7 @@ export const cardRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-        listId: z.number(),
+        listId: z.string(),
         boardId: z.string(),
         workspaceId: z.string(),
       })

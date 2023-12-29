@@ -94,7 +94,7 @@ export const listRouter = createTRPCRouter({
   updateTitle: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         title: z.string(),
         boardId: z.string(),
         workspaceId: z.string(),
@@ -133,7 +133,7 @@ export const listRouter = createTRPCRouter({
   deleteList: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         boardId: z.string(),
         workspaceId: z.string(),
       })
@@ -172,7 +172,7 @@ export const listRouter = createTRPCRouter({
   copyList: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         boardId: z.string(),
         workspaceId: z.string(),
       })
@@ -225,7 +225,7 @@ export const listRouter = createTRPCRouter({
             title: card.title,
             description: card.description,
             position: card.position,
-            listId: Number(newList.insertId),
+            listId: newList.insertId,
           };
         });
 

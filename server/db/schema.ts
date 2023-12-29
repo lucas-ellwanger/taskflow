@@ -112,7 +112,10 @@ export const boardRelations = relations(board, ({ one, many }) => ({
 export const list = mysqlTable(
   "list",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
     position: int("position").notNull(),
 
@@ -139,12 +142,15 @@ export const listRelations = relations(list, ({ one, many }) => ({
 export const card = mysqlTable(
   "card",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
     position: int("position").notNull(),
     description: varchar("description", { length: 256 }),
 
-    listId: bigint("list_id", { mode: "number" }).notNull(),
+    listId: varchar("list_id", { length: 36 }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)

@@ -1,11 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { board } from "@/server/db/schema";
+import { board, card, list } from "@/server/db/schema";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
@@ -147,6 +147,24 @@ export const boardRouter = createTRPCRouter({
               eq(board.workspaceId, input.workspaceId)
             )
           );
+
+        const listIds = await ctx.db.query.list.findMany({
+          where: eq(list.boardId, input.boardId),
+          columns: { id: true },
+        });
+
+        if (listIds.length > 0) {
+          // Delete all cards
+          await ctx.db.delete(card).where(
+            inArray(
+              card.listId,
+              listIds.map((l) => l.id)
+            )
+          );
+
+          // Delete all the lists
+          await ctx.db.delete(list).where(eq(list.boardId, input.boardId));
+        }
 
         revalidatePath(`/workspace/${input.workspaceId}`);
         return { success: true };
