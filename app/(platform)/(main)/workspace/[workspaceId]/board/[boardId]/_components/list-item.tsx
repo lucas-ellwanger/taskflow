@@ -9,10 +9,10 @@ import { ListHeader } from "./list-header";
 
 interface ListItemProps {
   index: number;
-  list: ListWithCards;
+  data: ListWithCards;
 }
 
-export const ListItem = ({ index, list }: ListItemProps) => {
+export const ListItem = ({ index, data }: ListItemProps) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,10 +31,10 @@ export const ListItem = ({ index, list }: ListItemProps) => {
   return (
     <li className="h-full w-[272px] shrink-0 select-none">
       <div className="w-full rounded-md bg-[#f1f2f4] pb-2 shadow-md">
-        <ListHeader onAddCard={enableEditing} list={list} />
+        <ListHeader data={data} onAddCard={enableEditing} />
         <CardForm
           ref={textareaRef}
-          listId={list.id}
+          listId={data.id}
           isEditing={isEditing}
           enableEditing={enableEditing}
           disableEditing={disableEditing}

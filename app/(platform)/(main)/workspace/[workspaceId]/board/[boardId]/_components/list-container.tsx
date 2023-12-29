@@ -9,20 +9,20 @@ import { ListItem } from "./list-item";
 
 interface ListContainerProps {
   boardId: string;
-  lists: ListWithCards[];
+  data: ListWithCards[];
 }
 
-export const ListContainer = ({ boardId, lists }: ListContainerProps) => {
-  const [orderedLists, setOrderedLists] = useState(lists);
+export const ListContainer = ({ boardId, data }: ListContainerProps) => {
+  const [orderedLists, setOrderedLists] = useState(data);
 
   useEffect(() => {
-    setOrderedLists(lists);
-  }, [lists]);
+    setOrderedLists(data);
+  }, [data]);
 
   return (
     <ol className="flex h-full gap-x-3">
       {orderedLists.map((list, index) => (
-        <ListItem key={list.id} index={index} list={list} />
+        <ListItem key={list.id} index={index} data={list} />
       ))}
       <ListForm />
       <div className="flex w-1 shrink-0" />

@@ -17,11 +17,11 @@ import { type List } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 
 interface ListOptionsProps {
-  list: List;
+  data: List;
   onAddCard: () => void;
 }
 
-export const ListOptions = ({ list, onAddCard }: ListOptionsProps) => {
+export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
   const params = useParams();
   const router = useRouter();
   const closeRef = useRef<ElementRef<"button">>(null);
@@ -43,7 +43,7 @@ export const ListOptions = ({ list, onAddCard }: ListOptionsProps) => {
     const workspaceId = params.workspaceId as string;
 
     copyList({
-      id: list.id,
+      id: data.id,
       boardId,
       workspaceId,
     });
@@ -54,7 +54,7 @@ export const ListOptions = ({ list, onAddCard }: ListOptionsProps) => {
       onSuccess: () => {
         closeRef.current?.click();
         router.refresh();
-        toast.success(`List "${list.title}" deleted`);
+        toast.success(`List "${data.title}" deleted`);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -66,7 +66,7 @@ export const ListOptions = ({ list, onAddCard }: ListOptionsProps) => {
     const workspaceId = params.workspaceId as string;
 
     deleteList({
-      id: list.id,
+      id: data.id,
       boardId,
       workspaceId,
     });

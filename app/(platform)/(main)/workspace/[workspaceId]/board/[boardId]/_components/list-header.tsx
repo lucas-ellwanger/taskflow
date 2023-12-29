@@ -12,14 +12,14 @@ import { api } from "@/trpc/react";
 import { ListOptions } from "./list-options";
 
 interface ListHeaderProps {
-  list: List;
+  data: List;
   onAddCard: () => void;
 }
 
-export const ListHeader = ({ list, onAddCard }: ListHeaderProps) => {
+export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
   const params = useParams();
 
-  const [title, setTitle] = useState(list.title);
+  const [title, setTitle] = useState(data.title);
   const [isEditing, setIsEditing] = useState(false);
 
   const formRef = useRef<ElementRef<"form">>(null);
@@ -63,9 +63,9 @@ export const ListHeader = ({ list, onAddCard }: ListHeaderProps) => {
     }
 
     updateList({
-      id: list.id,
+      id: data.id,
       title: newTitle,
-      boardId: list.boardId,
+      boardId: data.boardId,
       workspaceId,
     });
   };
@@ -99,7 +99,7 @@ export const ListHeader = ({ list, onAddCard }: ListHeaderProps) => {
           {title}
         </div>
       )}
-      <ListOptions onAddCard={onAddCard} list={list} />
+      <ListOptions onAddCard={onAddCard} data={data} />
     </div>
   );
 };
