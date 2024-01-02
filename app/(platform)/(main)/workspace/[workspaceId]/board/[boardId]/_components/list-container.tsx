@@ -12,6 +12,7 @@ import { ListItem } from "./list-item";
 
 interface ListContainerProps {
   boardId: string;
+  workspaceId: string;
   data: ListWithCards[];
 }
 
@@ -23,7 +24,11 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   return result;
 }
 
-export const ListContainer = ({ boardId, data }: ListContainerProps) => {
+export const ListContainer = ({
+  boardId,
+  workspaceId,
+  data,
+}: ListContainerProps) => {
   const [orderedData, setOrderedData] = useState(data);
 
   const { mutate: updateListPosition } =
@@ -71,6 +76,7 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
           id: list.id,
           position: list.position,
           boardId: boardId,
+          workspaceId: workspaceId,
         };
       });
 

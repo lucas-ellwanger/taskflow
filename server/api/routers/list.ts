@@ -252,6 +252,7 @@ export const listRouter = createTRPCRouter({
           id: z.string(),
           position: z.number(),
           boardId: z.string(),
+          workspaceId: z.string(),
         })
       )
     )
@@ -283,6 +284,9 @@ export const listRouter = createTRPCRouter({
               )
         );
 
+        revalidatePath(
+          `/workspace/${input[0]?.workspaceId}/board/${input[0]?.boardId}`
+        );
         return { success: true };
       } catch (error) {
         throw new TRPCError({
