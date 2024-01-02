@@ -244,4 +244,51 @@ export const listRouter = createTRPCRouter({
         });
       }
     }),
+
+  updateListPosition: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string(),
+          position: z.number(),
+          boardId: z.string(),
+        })
+      )
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        input.map(
+          async (listItem) =>
+            await ctx.db
+              .update(list)
+              .set({
+                position: listItem.position + 1,
+              })
+              .where(
+                and(
+                  eq(list.id, listItem.id),
+                  eq(list.boardId, listItem.boardId)
+                )
+              )
+        );
+
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update list position",
+        });
+      }
+    }),
 });

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import { toast } from "sonner";
 
 import { type ListWithCards } from "@/lib/types";
+import { api } from "@/trpc/react";
 
 import { ListForm } from "./list-form";
 import { ListItem } from "./list-item";
@@ -23,6 +25,16 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 
 export const ListContainer = ({ boardId, data }: ListContainerProps) => {
   const [orderedData, setOrderedData] = useState(data);
+
+  const { mutate: updateListPosition } =
+    api.list.updateListPosition.useMutation({
+      onSuccess: () => {
+        toast.success("List reordered");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
 
   useEffect(() => {
     setOrderedData(data);
@@ -53,7 +65,16 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
       );
 
       setOrderedData(items);
-      // TODO: Trigger mutation
+
+      const listsToUpdate = items.map((list) => {
+        return {
+          id: list.id,
+          position: list.position,
+          boardId: boardId,
+        };
+      });
+
+      updateListPosition(listsToUpdate);
     }
 
     // if user moves a card
