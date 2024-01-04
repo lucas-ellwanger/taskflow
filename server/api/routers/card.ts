@@ -67,4 +67,52 @@ export const cardRouter = createTRPCRouter({
         });
       }
     }),
+
+  updateCardPosition: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string(),
+          position: z.number(),
+          boardId: z.string(),
+          listId: z.string(),
+          workspaceId: z.string(),
+        })
+      )
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        input.map(
+          async (cardItem) =>
+            await ctx.db
+              .update(card)
+              .set({
+                position: cardItem.position + 1,
+                listId: cardItem.listId,
+              })
+              .where(eq(card.id, cardItem.id))
+        );
+
+        revalidatePath(
+          `/workspace/${input[0]?.workspaceId}/board/${input[0]?.boardId}`
+        );
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update card position",
+        });
+      }
+    }),
 });

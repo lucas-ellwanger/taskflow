@@ -41,6 +41,16 @@ export const ListContainer = ({
       },
     });
 
+  const { mutate: updateCardPosition } =
+    api.card.updateCardPosition.useMutation({
+      onSuccess: () => {
+        toast.success("Card reordered");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+
   useEffect(() => {
     setOrderedData(data);
   }, [data]);
@@ -124,7 +134,18 @@ export const ListContainer = ({
         sourceList.cards = reorderedCards;
 
         setOrderedData(newOrderedData);
-        // TODO: Trigger mutation
+
+        const cardsToUpdate = reorderedCards.map((card) => {
+          return {
+            id: card.id,
+            position: card.position,
+            boardId: boardId,
+            listId: card.listId,
+            workspaceId: workspaceId,
+          };
+        });
+
+        updateCardPosition(cardsToUpdate);
         // if user moves a card to another list
       } else {
         // remove card from the source list
@@ -149,7 +170,18 @@ export const ListContainer = ({
         });
 
         setOrderedData(newOrderedData);
-        // TODO: Trigger mutation
+
+        const cardsToUpdate = destList.cards.map((card) => {
+          return {
+            id: card.id,
+            position: card.position,
+            boardId: boardId,
+            listId: card.listId,
+            workspaceId: workspaceId,
+          };
+        });
+
+        updateCardPosition(cardsToUpdate);
       }
     }
   };
