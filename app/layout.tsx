@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
 
 import { siteConfig } from "@/config/site";
 import { EdgeStoreProvider } from "@/lib/edgestore";
@@ -35,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans antialiased ${inter.variable}`}>
-        <TRPCReactProvider cookies={cookies().toString()}>
+        <TRPCReactProvider>
           <EdgeStoreProvider>{children}</EdgeStoreProvider>
         </TRPCReactProvider>
       </body>
