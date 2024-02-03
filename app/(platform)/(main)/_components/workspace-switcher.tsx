@@ -63,7 +63,7 @@ export const WorkspaceSwitcher = ({
             className
           )}
         >
-          <div className="relative h-9 w-9">
+          <div className="relative aspect-square h-9 w-9">
             <Image
               fill
               src={currentWorkspace?.imageUrl!}
@@ -91,7 +91,7 @@ export const WorkspaceSwitcher = ({
                   onSelect={() => onWorkspaceSelect(workspace)}
                   className="cursor-pointer text-sm"
                 >
-                  <div className="relative mr-1.5 h-9 w-9">
+                  <div className="relative mr-1.5 aspect-square h-9 w-9">
                     <Image
                       fill
                       src={currentWorkspace?.imageUrl!}
