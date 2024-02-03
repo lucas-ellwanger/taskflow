@@ -56,7 +56,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
  * These are the pieces you use to build your tRPC API. You should import these a lot in the
- * "/server/api/routers" directory.
+ * "/src/server/api/routers" directory.
  */
 
 /**
