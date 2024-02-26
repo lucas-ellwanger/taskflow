@@ -1,20 +1,16 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
-  datetime,
   index,
-  int,
-  mysqlEnum,
-  mysqlTableCreator,
-  serial,
+  integer,
+  pgTableCreator,
   timestamp,
   varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const mysqlTable = mysqlTableCreator((name) => `taskflow_${name}`);
+export const createTable = pgTableCreator((name) => `taskflow_${name}`);
 
-export const workspace = mysqlTable(
+export const workspace = createTable(
   "workspace",
   {
     id: varchar("id", { length: 36 })
@@ -30,11 +26,11 @@ export const workspace = mysqlTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (workspace) => ({
-    id_index: index("id_index").on(workspace.id),
-    user_id_index: index("user_id_index").on(workspace.userId),
+    idIndex: index("id_workspace_index").on(workspace.id),
+    userIdIndex: index("user_id_workspace_index").on(workspace.userId),
   })
 );
 
@@ -43,14 +39,14 @@ export const workspaceRelations = relations(workspace, ({ many }) => ({
   boards: many(board),
 }));
 
-export const member = mysqlTable(
+export const member = createTable(
   "member",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
-    role: mysqlEnum("role", ["ADMIN", "MODERATOR", "MEMBER"])
+    role: varchar("role", { enum: ["ADMIN", "MODERATOR", "MEMBER"] })
       .notNull()
       .$default(() => "MEMBER"),
 
@@ -60,11 +56,11 @@ export const member = mysqlTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (member) => ({
-    user_id_index: index("user_id_index").on(member.userId),
-    workspace_id_index: index("workspace_id_index").on(member.workspaceId),
+    userIdIndex: index("user_id_member_index").on(member.userId),
+    workspaceIdIndex: index("workspace_id_member_index").on(member.workspaceId),
   })
 );
 
@@ -75,7 +71,7 @@ export const memberRelations = relations(member, ({ one }) => ({
   }),
 }));
 
-export const board = mysqlTable(
+export const board = createTable(
   "board",
   {
     id: varchar("id", { length: 36 })
@@ -94,10 +90,10 @@ export const board = mysqlTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (board) => ({
-    workspace_id_index: index("workspace_id_index").on(board.workspaceId),
+    workspaceIdIndex: index("workspace_id_board_index").on(board.workspaceId),
   })
 );
 
@@ -109,7 +105,7 @@ export const boardRelations = relations(board, ({ one, many }) => ({
   lists: many(list),
 }));
 
-export const list = mysqlTable(
+export const list = createTable(
   "list",
   {
     id: varchar("id", { length: 36 })
@@ -117,17 +113,17 @@ export const list = mysqlTable(
       .notNull()
       .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
-    position: int("position").notNull(),
+    position: integer("position").notNull(),
 
     boardId: varchar("board_id", { length: 36 }).notNull(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (list) => ({
-    board_id_index: index("board_id_index").on(list.boardId),
+    boardIdIndex: index("board_id_list_index").on(list.boardId),
   })
 );
 
@@ -139,7 +135,7 @@ export const listRelations = relations(list, ({ one, many }) => ({
   cards: many(card),
 }));
 
-export const card = mysqlTable(
+export const card = createTable(
   "card",
   {
     id: varchar("id", { length: 36 })
@@ -147,7 +143,7 @@ export const card = mysqlTable(
       .notNull()
       .$defaultFn(() => createId()),
     title: varchar("title", { length: 256 }).notNull(),
-    position: int("position").notNull(),
+    position: integer("position").notNull(),
     description: varchar("description", { length: 256 }),
 
     listId: varchar("list_id", { length: 36 }).notNull(),
@@ -155,10 +151,10 @@ export const card = mysqlTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (card) => ({
-    list_id_index: index("list_id_index").on(card.listId),
+    listIdIndex: index("list_id_card_index").on(card.listId),
   })
 );
 
@@ -169,16 +165,20 @@ export const cardRelations = relations(card, ({ one }) => ({
   }),
 }));
 
-export const auditLog = mysqlTable(
+export const auditLog = createTable(
   "audit_log",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
-    action: mysqlEnum("action", ["CREATE", "UPDATE", "DELETE"]).notNull(),
+    action: varchar("action", {
+      enum: ["CREATE", "UPDATE", "DELETE"],
+    }).notNull(),
     entityId: varchar("entity_id", { length: 36 }).notNull(),
-    entityType: mysqlEnum("entity_type", ["BOARD", "LIST", "CARD"]).notNull(),
+    entityType: varchar("entity_type", {
+      enum: ["BOARD", "LIST", "CARD"],
+    }).notNull(),
     entityTitle: varchar("entity_title", { length: 256 }).notNull(),
     userId: varchar("user_id", { length: 36 }).notNull(),
     userImage: varchar("user_image", { length: 256 }).notNull(),
@@ -189,10 +189,12 @@ export const auditLog = mysqlTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (auditLog) => ({
-    workspace_id_index: index("workspace_id_index").on(auditLog.workspaceId),
+    workspaceIdIndex: index("workspace_id_audit_index").on(
+      auditLog.workspaceId
+    ),
   })
 );
 
@@ -203,24 +205,24 @@ export const auditLogRelations = relations(auditLog, ({ one }) => ({
   }),
 }));
 
-export const workspaceLimit = mysqlTable(
+export const workspaceLimit = createTable(
   "workspace_limit",
   {
     id: varchar("id", { length: 36 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
-    count: int("limit").notNull().default(0),
+    count: integer("limit").notNull().default(0),
 
     workspaceId: varchar("workspace_id", { length: 36 }).notNull().unique(),
 
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at"),
   },
   (workspaceLimit) => ({
-    workspace_id_index: index("workspace_id_index").on(
+    workspaceIdIndex: index("workspace_id_limit_index").on(
       workspaceLimit.workspaceId
     ),
   })
@@ -233,7 +235,7 @@ export const workspaceLimitRelations = relations(workspaceLimit, ({ one }) => ({
   }),
 }));
 
-export const workspaceSubscription = mysqlTable(
+export const workspaceSubscription = createTable(
   "workspace_subscription",
   {
     id: varchar("id", { length: 36 })
@@ -245,12 +247,12 @@ export const workspaceSubscription = mysqlTable(
       length: 36,
     }).unique(),
     stripePriceId: varchar("stripe_price_id", { length: 36 }),
-    stripeCurrentPeriodEnd: datetime("stripe_current_period_end"),
+    stripeCurrentPeriodEnd: timestamp("stripe_current_period_end"),
 
     workspaceId: varchar("workspace_id", { length: 36 }).notNull().unique(),
   },
   (workspaceSubscription) => ({
-    workspace_id_index: index("workspace_id_index").on(
+    workspaceIdIndex: index("workspace_id_sub_index").on(
       workspaceSubscription.workspaceId
     ),
   })

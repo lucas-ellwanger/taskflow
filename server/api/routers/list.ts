@@ -214,18 +214,21 @@ export const listRouter = createTRPCRouter({
 
         const newOrder = lastList ? lastList.position + 1 : 1;
 
-        const newList = await ctx.db.insert(list).values({
-          boardId: listToCopy.boardId,
-          title: `${listToCopy.title} - Copy`,
-          position: newOrder,
-        });
+        const newList = await ctx.db
+          .insert(list)
+          .values({
+            boardId: listToCopy.boardId,
+            title: `${listToCopy.title} - Copy`,
+            position: newOrder,
+          })
+          .returning();
 
         const newListCards = listToCopy.cards.map((card) => {
           return {
             title: card.title,
             description: card.description,
             position: card.position,
-            listId: newList.insertId,
+            listId: newList[0]?.id as string,
           };
         });
 

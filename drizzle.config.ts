@@ -1,11 +1,12 @@
-import { env } from "@/env";
 import { type Config } from "drizzle-kit";
+
+import { env } from "@/env";
 
 export default {
   schema: "./server/db/schema.ts",
-  driver: "mysql2",
+  driver: "pg",
   dbCredentials: {
-    uri: env.DATABASE_URL,
+    connectionString: env.DATABASE_URL,
   },
   tablesFilter: ["taskflow_*"],
 } satisfies Config;
