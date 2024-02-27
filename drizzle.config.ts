@@ -1,12 +1,13 @@
-import { type Config } from "drizzle-kit";
+import "dotenv/config";
 
-import { env } from "@/env";
+import type { Config } from "drizzle-kit";
 
 export default {
   schema: "./server/db/schema.ts",
+  out: "./drizzle",
   driver: "pg",
   dbCredentials: {
-    connectionString: env.DATABASE_URL,
+    connectionString: process.env.NEON_DATABASE_URL!,
   },
   tablesFilter: ["taskflow_*"],
 } satisfies Config;

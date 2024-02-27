@@ -26,7 +26,6 @@ export const workspace = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (workspace) => ({
     idIndex: index("id_workspace_index").on(workspace.id),
@@ -56,7 +55,6 @@ export const member = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (member) => ({
     userIdIndex: index("user_id_member_index").on(member.userId),
@@ -90,7 +88,6 @@ export const board = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (board) => ({
     workspaceIdIndex: index("workspace_id_board_index").on(board.workspaceId),
@@ -120,7 +117,6 @@ export const list = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (list) => ({
     boardIdIndex: index("board_id_list_index").on(list.boardId),
@@ -151,7 +147,6 @@ export const card = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (card) => ({
     listIdIndex: index("list_id_card_index").on(card.listId),
@@ -189,7 +184,6 @@ export const auditLog = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (auditLog) => ({
     workspaceIdIndex: index("workspace_id_audit_index").on(
@@ -219,7 +213,6 @@ export const workspaceLimit = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at"),
   },
   (workspaceLimit) => ({
     workspaceIdIndex: index("workspace_id_limit_index").on(
