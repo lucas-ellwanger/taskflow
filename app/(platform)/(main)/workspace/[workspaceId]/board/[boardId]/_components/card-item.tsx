@@ -2,6 +2,7 @@
 
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
+import { useCardModal } from "@/hooks/use-card-modal";
 import type { Card } from "@/server/db/schema";
 
 interface CardItemProps {
@@ -10,6 +11,8 @@ interface CardItemProps {
 }
 
 export const CardItem = ({ data, index }: CardItemProps) => {
+  const cardModal = useCardModal();
+
   return (
     <Draggable draggableId={data.id} index={index}>
       {(provided) => (
@@ -18,6 +21,7 @@ export const CardItem = ({ data, index }: CardItemProps) => {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           role="button"
+          onClick={() => cardModal.onOpen(data.id)}
           className="truncate rounded-md border-2 border-transparent bg-background px-3 py-2 text-sm shadow-sm hover:border-foreground"
         >
           {data.title}
