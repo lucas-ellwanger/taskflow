@@ -24,9 +24,9 @@ export const Header = ({ data }: HeaderProps) => {
 
   const { mutate: updateCard, isLoading } = api.card.updateTitle.useMutation({
     onSuccess: ({ data }) => {
-      router.refresh();
       setTitle(data.title);
       toast.success(`Card "${data.title}" updated!`);
+      router.refresh();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -34,17 +34,17 @@ export const Header = ({ data }: HeaderProps) => {
   });
 
   const onSubmit = (formData: FormData) => {
-    const title = formData.get("title") as string;
+    const newTitle = formData.get("title") as string;
     const boardId = params.boardId as string;
     const workspaceId = params.workspaceId as string;
 
-    if (title === data.title) {
+    if (newTitle === title) {
       return;
     }
 
     updateCard({
       id: data.id,
-      title,
+      title: newTitle,
       boardId,
       workspaceId,
     });
