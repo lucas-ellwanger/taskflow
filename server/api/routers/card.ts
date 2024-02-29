@@ -115,4 +115,78 @@ export const cardRouter = createTRPCRouter({
         });
       }
     }),
+
+  getCard: publicProcedure
+    .input(z.object({ cardId: z.string().or(z.undefined()) }))
+    .query(async ({ ctx, input }) => {
+      if (!input.cardId) {
+        return null;
+      }
+
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        const c = await ctx.db.query.card.findFirst({
+          where: eq(card.id, input.cardId),
+          with: {
+            list: true,
+          },
+        });
+
+        return c;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get card",
+        });
+      }
+    }),
+
+  updateTitle: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        workspaceId: z.string(),
+        boardId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      try {
+        await ctx.db
+          .update(card)
+          .set({
+            title: input.title,
+          })
+          .where(eq(card.id, input.id));
+
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true, data: input };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update board",
+        });
+      }
+    }),
 });
