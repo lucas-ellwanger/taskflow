@@ -189,4 +189,44 @@ export const cardRouter = createTRPCRouter({
         });
       }
     }),
+
+  updateDescription: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string(),
+        workspaceId: z.string(),
+        boardId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      try {
+        await ctx.db
+          .update(card)
+          .set({
+            description: input.description,
+          })
+          .where(eq(card.id, input.id));
+
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true, data: input };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update board",
+        });
+      }
+    }),
 });

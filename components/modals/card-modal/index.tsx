@@ -4,6 +4,7 @@ import { useCardModal } from "@/hooks/use-card-modal";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { api } from "@/trpc/react";
 
+import { Description } from "./description";
 import { Header } from "./header";
 
 export const CardModal = () => {
@@ -23,6 +24,17 @@ export const CardModal = () => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         {isLoading ? <Header.Skeleton /> : <Header data={card} />}
+        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
+          <div className="col-span-3">
+            <div className="w-full space-y-6">
+              {isLoading ? (
+                <Description.Skeleton />
+              ) : (
+                <Description data={card} />
+              )}
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

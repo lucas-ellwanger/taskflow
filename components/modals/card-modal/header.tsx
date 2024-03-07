@@ -18,6 +18,8 @@ export const Header = ({ data }: HeaderProps) => {
   const params = useParams();
   const router = useRouter();
 
+  const utils = api.useUtils();
+
   const inputRef = useRef<ElementRef<"input">>(null);
 
   const [title, setTitle] = useState(data.title);
@@ -25,8 +27,9 @@ export const Header = ({ data }: HeaderProps) => {
   const { mutate: updateCard, isLoading } = api.card.updateTitle.useMutation({
     onSuccess: ({ data }) => {
       setTitle(data.title);
-      toast.success(`Card "${data.title}" updated!`);
+      utils.card.invalidate();
       router.refresh();
+      toast.success(`Card "${data.title}" updated!`);
     },
     onError: (error) => {
       toast.error(error.message);
