@@ -26,7 +26,6 @@ const formSchema = z.object({
 
 export const Description = ({ data }: DescriptionProps) => {
   const params = useParams();
-  const router = useRouter();
   const utils = api.useUtils();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +43,9 @@ export const Description = ({ data }: DescriptionProps) => {
   const { mutate: updateCard, isLoading } =
     api.card.updateDescription.useMutation({
       onSuccess: ({ data }) => {
-        utils.card.invalidate();
+        utils.card.getCard.invalidate({
+          cardId: data.id,
+        });
         toast.success(`Card "${data.title}" updated!`);
         disableEditing();
       },

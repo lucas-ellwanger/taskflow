@@ -27,7 +27,9 @@ export const Header = ({ data }: HeaderProps) => {
   const { mutate: updateCard, isLoading } = api.card.updateTitle.useMutation({
     onSuccess: ({ data }) => {
       setTitle(data.title);
-      utils.card.invalidate();
+      utils.card.getCard.invalidate({
+        cardId: data.id,
+      });
       router.refresh();
       toast.success(`Card "${data.title}" updated!`);
     },
