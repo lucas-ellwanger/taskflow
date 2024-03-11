@@ -200,7 +200,7 @@ export const ListContainer = ({
             ))}
             {provided.placeholder}
             <ListForm />
-            <div className="flex w-1 shrink-0" />
+            <div className="w-1 flex-shrink-0" />
           </ol>
         )}
       </Droppable>
