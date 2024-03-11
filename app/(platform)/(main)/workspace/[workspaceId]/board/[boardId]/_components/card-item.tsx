@@ -22,7 +22,7 @@ export const CardItem = ({ data, index }: CardItemProps) => {
           ref={provided.innerRef}
           role="button"
           onClick={() => cardModal.onOpen(data.id)}
-          className="truncate rounded-md border-2 border-transparent bg-background px-3 py-2 text-sm shadow-sm hover:border-foreground"
+          className="mt-2 truncate rounded-md border-2 border-transparent bg-background px-3 py-2 text-sm shadow-sm hover:border-foreground"
         >
           {data.title}
         </div>
