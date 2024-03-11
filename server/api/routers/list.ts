@@ -212,14 +212,14 @@ export const listRouter = createTRPCRouter({
           },
         });
 
-        const newOrder = lastList ? lastList.position + 1 : 1;
+        const newPosition = lastList ? lastList.position + 1 : 1;
 
         const newList = await ctx.db
           .insert(list)
           .values({
             boardId: listToCopy.boardId,
             title: `${listToCopy.title} - Copy`,
-            position: newOrder,
+            position: newPosition,
           })
           .returning();
 

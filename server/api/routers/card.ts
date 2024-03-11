@@ -229,4 +229,101 @@ export const cardRouter = createTRPCRouter({
         });
       }
     }),
+
+  copyCard: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        const cardToCopy = await ctx.db.query.card.findFirst({
+          where: eq(card.id, input.id),
+        });
+
+        if (!cardToCopy) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Card not found",
+          });
+        }
+
+        const lastCard = await ctx.db.query.card.findFirst({
+          where: eq(card.listId, cardToCopy.listId),
+          orderBy: (card, { desc }) => [desc(card.position)],
+          columns: {
+            position: true,
+          },
+        });
+
+        const newPosition = lastCard ? lastCard.position + 1 : 1;
+
+        await ctx.db.insert(card).values({
+          title: `${cardToCopy.title} - Copy`,
+          description: cardToCopy.description,
+          position: newPosition,
+          listId: cardToCopy.listId,
+        });
+
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true, data: cardToCopy };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to copy card",
+        });
+      }
+    }),
+
+  deleteCard: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        boardId: z.string(),
+        workspaceId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = await getUserAuth();
+
+      if (!session) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      // TODO: check if user is member of workspace and have permission
+
+      try {
+        await ctx.db.delete(card).where(eq(card.id, input.id));
+
+        revalidatePath(
+          `/workspace/${input.workspaceId}/board/${input.boardId}`
+        );
+        return { success: true, data: input };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete card",
+        });
+      }
+    }),
 });
