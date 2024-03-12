@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { card, list } from "@/server/db/schema";
+import { api } from "@/trpc/server";
 
 export const cardRouter = createTRPCRouter({
   createCard: publicProcedure
@@ -52,10 +53,24 @@ export const cardRouter = createTRPCRouter({
 
         const newPosition = lastCard ? lastCard.position + 1 : 1;
 
-        await ctx.db.insert(card).values({
-          title: input.title,
-          listId: input.listId,
-          position: newPosition,
+        const newCard = await ctx.db
+          .insert(card)
+          .values({
+            title: input.title,
+            listId: input.listId,
+            position: newPosition,
+          })
+          .returning();
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "CREATE",
+          entityId: newCard[0]?.id,
+          entityType: "CARD",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
         });
 
         revalidatePath(`/workspace/${input.boardId}/board/${input.boardId}`);

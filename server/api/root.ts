@@ -1,3 +1,4 @@
+import { auditLogRouter } from "@/server/api/routers/audit-log";
 import { boardRouter } from "@/server/api/routers/board";
 import { cardRouter } from "@/server/api/routers/card";
 import { listRouter } from "@/server/api/routers/list";
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   board: boardRouter,
   list: listRouter,
   card: cardRouter,
+  auditLog: auditLogRouter,
 });
 
 // export type definition of API
