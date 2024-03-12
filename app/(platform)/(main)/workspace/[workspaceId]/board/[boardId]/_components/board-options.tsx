@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { MoreHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,13 +20,15 @@ interface BoardOptionsProps {
 export const BoardOptions = ({ id }: BoardOptionsProps) => {
   const params = useParams();
   const router = useRouter();
+  const utils = api.useUtils();
 
   const workspaceId = params.workspaceId as string;
 
   const { mutate: deleteBoard, isLoading } = api.board.deleteBoard.useMutation({
     onSuccess: () => {
-      router.push(`/workspace/${workspaceId}`);
       toast.success("Board deleted");
+      utils.workspace.getWorkspaceById.invalidate({ workspaceId });
+      router.replace(`/workspace/${workspaceId}`);
     },
     onError: (error) => {
       toast.error(error.message);

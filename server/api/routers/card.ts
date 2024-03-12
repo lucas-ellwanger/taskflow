@@ -53,7 +53,7 @@ export const cardRouter = createTRPCRouter({
 
         const newPosition = lastCard ? lastCard.position + 1 : 1;
 
-        const newCard = await ctx.db
+        const [newCard] = await ctx.db
           .insert(card)
           .values({
             title: input.title,
@@ -64,7 +64,7 @@ export const cardRouter = createTRPCRouter({
 
         await api.auditLog.createAuditLog.mutate({
           action: "CREATE",
-          entityId: newCard[0]?.id,
+          entityId: newCard?.id,
           entityType: "CARD",
           entityTitle: input.title,
           userId: session.user.id,
@@ -287,11 +287,25 @@ export const cardRouter = createTRPCRouter({
 
         const newPosition = lastCard ? lastCard.position + 1 : 1;
 
-        await ctx.db.insert(card).values({
-          title: `${cardToCopy.title} - Copy`,
-          description: cardToCopy.description,
-          position: newPosition,
-          listId: cardToCopy.listId,
+        const [newCard] = await ctx.db
+          .insert(card)
+          .values({
+            title: `${cardToCopy.title} - Copy`,
+            description: cardToCopy.description,
+            position: newPosition,
+            listId: cardToCopy.listId,
+          })
+          .returning();
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "CREATE",
+          entityId: newCard?.id,
+          entityType: "CARD",
+          entityTitle: `${cardToCopy.title} - Copy`,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
         });
 
         revalidatePath(

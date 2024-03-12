@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { board, card, list } from "@/server/db/schema";
+import { api } from "@/trpc/server";
 
 export const boardRouter = createTRPCRouter({
   createBoard: publicProcedure
@@ -49,29 +50,39 @@ export const boardRouter = createTRPCRouter({
       }
 
       try {
-        await ctx.db.insert(board).values({
-          title,
-          workspaceId,
-          imageId,
-          imageThumbUrl,
-          imageFullUrl,
-          imageUserName,
-          imageLinkHTML,
-        });
+        const [newBoard] = await ctx.db
+          .insert(board)
+          .values({
+            title,
+            workspaceId,
+            imageId,
+            imageThumbUrl,
+            imageFullUrl,
+            imageUserName,
+            imageLinkHTML,
+          })
+          .returning();
 
-        const createdBoard = await ctx.db.query.board.findFirst({
-          where: eq(board.workspaceId, workspaceId),
-          orderBy: (board, { desc }) => [desc(board.createdAt)],
-        });
-
-        if (!createdBoard) {
+        if (!newBoard) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Failed to create board",
           });
         }
 
-        return { createdBoard };
+        await api.auditLog.createAuditLog.mutate({
+          action: "CREATE",
+          entityId: newBoard?.id,
+          entityType: "BOARD",
+          entityTitle: title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: workspaceId,
+        });
+
+        revalidatePath(`/workspace/${workspaceId}`);
+        return { success: true, data: newBoard };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

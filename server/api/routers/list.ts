@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getUserAuth } from "@/lib/auth/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { board, card, list } from "@/server/db/schema";
+import { api } from "@/trpc/server";
 
 export const listRouter = createTRPCRouter({
   getListsWithCards: publicProcedure
@@ -214,7 +215,7 @@ export const listRouter = createTRPCRouter({
 
         const newPosition = lastList ? lastList.position + 1 : 1;
 
-        const newList = await ctx.db
+        const [newList] = await ctx.db
           .insert(list)
           .values({
             boardId: listToCopy.boardId,
@@ -228,13 +229,24 @@ export const listRouter = createTRPCRouter({
             title: card.title,
             description: card.description,
             position: card.position,
-            listId: newList[0]?.id as string,
+            listId: newList?.id as string,
           };
         });
 
         if (newListCards.length > 0) {
           await ctx.db.insert(card).values(newListCards);
         }
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "CREATE",
+          entityId: newList?.id,
+          entityType: "LIST",
+          entityTitle: `${listToCopy.title} - Copy`,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
 
         revalidatePath(
           `/workspace/${input.workspaceId}/board/${input.boardId}`
