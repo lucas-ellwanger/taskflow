@@ -46,7 +46,15 @@ export const Description = ({ data }: DescriptionProps) => {
         utils.card.getCard.invalidate({
           cardId: data.id,
         });
+
+        utils.auditLog.getLatestAuditLogs.invalidate({
+          workspaceId: params.workspaceId as string,
+          entityId: data.id,
+          entityType: "CARD",
+        });
+
         toast.success(`Card "${data.title}" updated!`);
+
         disableEditing();
       },
       onError: (error) => {

@@ -7,7 +7,7 @@
     "build": "next build",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "lint": "next lint",
     "start": "next start"
   },
@@ -40,9 +40,9 @@
     "drizzle-orm": "0.30.1",
     "drizzle-zod": "^0.5.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.356.0",
+    "lucide-react": "^0.357.0",
     "next": "^14.1.3",
-    "next-themes": "^0.2.1",
+    "next-themes": "^0.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
@@ -58,12 +58,12 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.0",
     "@types/eslint": "^8.56.5",
     "@types/lodash": "^4.17.0",
-    "@types/node": "^20.11.26",
+    "@types/node": "^20.11.27",
     "@types/react": "^18.2.65",
-    "@types/react-dom": "^18.2.21",
+    "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "autoprefixer": "^10.4.18",
@@ -76,7 +76,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.4.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.27.0"

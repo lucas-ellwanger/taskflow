@@ -193,6 +193,17 @@ export const cardRouter = createTRPCRouter({
           })
           .where(eq(card.id, input.id));
 
+        await api.auditLog.createAuditLog.mutate({
+          action: "UPDATE",
+          entityId: input.id,
+          entityType: "CARD",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
+
         revalidatePath(
           `/workspace/${input.workspaceId}/board/${input.boardId}`
         );
@@ -232,6 +243,17 @@ export const cardRouter = createTRPCRouter({
             description: input.description,
           })
           .where(eq(card.id, input.id));
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "UPDATE",
+          entityId: input.id,
+          entityType: "CARD",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
 
         revalidatePath(
           `/workspace/${input.workspaceId}/board/${input.boardId}`
@@ -343,6 +365,17 @@ export const cardRouter = createTRPCRouter({
 
       try {
         await ctx.db.delete(card).where(eq(card.id, input.id));
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "DELETE",
+          entityId: input.id,
+          entityType: "CARD",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
 
         revalidatePath(
           `/workspace/${input.workspaceId}/board/${input.boardId}`

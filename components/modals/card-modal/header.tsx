@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementRef, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Layout } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,7 +16,6 @@ interface HeaderProps {
 
 export const Header = ({ data }: HeaderProps) => {
   const params = useParams();
-  const router = useRouter();
 
   const utils = api.useUtils();
 
@@ -27,10 +26,17 @@ export const Header = ({ data }: HeaderProps) => {
   const { mutate: updateCard, isLoading } = api.card.updateTitle.useMutation({
     onSuccess: ({ data }) => {
       setTitle(data.title);
+
       utils.card.getCard.invalidate({
         cardId: data.id,
       });
-      router.refresh();
+
+      utils.auditLog.getLatestAuditLogs.invalidate({
+        workspaceId: params.workspaceId as string,
+        entityId: data.id,
+        entityType: "CARD",
+      });
+
       toast.success(`Card "${data.title}" updated!`);
     },
     onError: (error) => {

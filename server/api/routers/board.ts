@@ -72,7 +72,7 @@ export const boardRouter = createTRPCRouter({
 
         await api.auditLog.createAuditLog.mutate({
           action: "CREATE",
-          entityId: newBoard?.id,
+          entityId: newBoard.id,
           entityType: "BOARD",
           entityTitle: title,
           userId: session.user.id,
@@ -122,6 +122,17 @@ export const boardRouter = createTRPCRouter({
             )
           );
 
+        await api.auditLog.createAuditLog.mutate({
+          action: "UPDATE",
+          entityId: input.id,
+          entityType: "BOARD",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
+
         revalidatePath(`/workspace/${input.workspaceId}/board/${input.id}`);
         return { success: true, data: input };
       } catch (error) {
@@ -150,14 +161,33 @@ export const boardRouter = createTRPCRouter({
       }
 
       try {
-        await ctx.db
+        const [deletedBoard] = await ctx.db
           .delete(board)
           .where(
             and(
               eq(board.id, input.boardId),
               eq(board.workspaceId, input.workspaceId)
             )
-          );
+          )
+          .returning();
+
+        if (!deletedBoard) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Failed to delete board",
+          });
+        }
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "DELETE",
+          entityId: input.boardId,
+          entityType: "BOARD",
+          entityTitle: deletedBoard.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
 
         const listIds = await ctx.db.query.list.findMany({
           where: eq(list.boardId, input.boardId),

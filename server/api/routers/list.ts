@@ -74,10 +74,24 @@ export const listRouter = createTRPCRouter({
 
         const newPosition = lastList ? lastList.position + 1 : 1;
 
-        await ctx.db.insert(list).values({
-          title: input.title,
-          boardId: input.boardId,
-          position: newPosition,
+        const [newList] = await ctx.db
+          .insert(list)
+          .values({
+            title: input.title,
+            boardId: input.boardId,
+            position: newPosition,
+          })
+          .returning();
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "CREATE",
+          entityId: newList?.id,
+          entityType: "LIST",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
         });
 
         revalidatePath(
@@ -121,6 +135,17 @@ export const listRouter = createTRPCRouter({
           })
           .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)));
 
+        await api.auditLog.createAuditLog.mutate({
+          action: "UPDATE",
+          entityId: input.id,
+          entityType: "LIST",
+          entityTitle: input.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
+
         revalidatePath(`/workspace/${input.workspaceId}/board/${input.id}`);
         return { success: true, data: input };
       } catch (error) {
@@ -152,9 +177,28 @@ export const listRouter = createTRPCRouter({
       // TODO: check if user is member of workspace and have permission
 
       try {
-        await ctx.db
+        const [deletedList] = await ctx.db
           .delete(list)
-          .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)));
+          .where(and(eq(list.id, input.id), eq(list.boardId, input.boardId)))
+          .returning();
+
+        if (!deletedList) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Failed to delete list",
+          });
+        }
+
+        await api.auditLog.createAuditLog.mutate({
+          action: "DELETE",
+          entityId: input.id,
+          entityType: "LIST",
+          entityTitle: deletedList.title,
+          userId: session.user.id,
+          userImage: session.user.imageUrl,
+          userName: session.user.name,
+          workspaceId: input.workspaceId,
+        });
 
         await ctx.db.delete(card).where(eq(card.listId, input.id));
 
