@@ -68,4 +68,19 @@ export const auditLogRouter = createTRPCRouter({
         });
       }
     }),
+
+  getAllLogs: publicProcedure
+    .input(
+      z.object({
+        workspaceId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const auditLogs = await ctx.db.query.auditLog.findMany({
+        where: eq(auditLog.workspaceId, input.workspaceId),
+        orderBy: (auditLog, { desc }) => [desc(auditLog.createdAt)],
+      });
+
+      return auditLogs;
+    }),
 });
