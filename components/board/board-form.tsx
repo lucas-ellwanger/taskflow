@@ -51,7 +51,7 @@ export const BoardForm = ({ closeRef }: BoardFormProps) => {
     onSuccess: ({ data }) => {
       closeRef.current?.click();
       toast.success("Board created!");
-      utils.workspace.getWorkspaceById.invalidate({ workspaceId });
+      utils.board.getBoards.invalidate({ workspaceId });
       router.push(`/workspace/${workspaceId}/board/${data.id}`);
     },
     onError: (error) => {

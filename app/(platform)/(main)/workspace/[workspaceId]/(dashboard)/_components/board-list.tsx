@@ -1,16 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { HelpCircle, User2 } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { BoardPopover } from "@/components/board/board-popover";
 import { Hint } from "@/components/hint";
-import { type Board } from "@/server/db/schema";
+import { api } from "@/trpc/react";
 
-interface BoardListProps {
-  boards: Board[] | undefined;
-}
+export const BoardList = () => {
+  const params = useParams();
 
-export const BoardList = ({ boards }: BoardListProps) => {
+  const { data: boards, isLoading } = api.board.getBoards.useQuery({
+    workspaceId: params.workspaceId as string,
+  });
+
+  if (!boards || isLoading) {
+    return (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+        <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center text-lg font-semibold text-neutral-700">
@@ -18,7 +36,7 @@ export const BoardList = ({ boards }: BoardListProps) => {
         Your boards
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {boards?.map((board) => (
+        {boards.map((board) => (
           <Link
             key={board.id}
             href={`/workspace/${board.workspaceId}/board/${board.id}`}
@@ -53,15 +71,15 @@ export const BoardList = ({ boards }: BoardListProps) => {
   );
 };
 
-BoardList.Skeleton = function SkeletonBoardList() {
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-      <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
-    </div>
-  );
-};
+// BoardList.Skeleton = function SkeletonBoardList() {
+//   return (
+//     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//       <Skeleton className="aspect-video h-full w-full rounded-md p-2" />
+//     </div>
+//   );
+// };

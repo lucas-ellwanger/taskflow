@@ -199,4 +199,15 @@ export const boardRouter = createTRPCRouter({
 
       return { board: b };
     }),
+
+  getBoards: publicProcedure
+    .input(z.object({ workspaceId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const b = await ctx.db.query.board.findMany({
+        where: eq(board.workspaceId, input.workspaceId),
+        orderBy: (board, { asc }) => [asc(board.createdAt)],
+      });
+
+      return b;
+    }),
 });

@@ -39,13 +39,13 @@ export const auditLogRouter = createTRPCRouter({
   getLatestAuditLogs: publicProcedure
     .input(
       z.object({
-        workspaceId: z.string(),
+        workspaceId: z.string().or(z.undefined()),
         entityId: z.string().or(z.undefined()),
         entityType: z.enum(["BOARD", "LIST", "CARD"]),
       })
     )
     .query(async ({ ctx, input }) => {
-      if (!input.entityId) {
+      if (!input.entityId || !input.workspaceId) {
         return null;
       }
 

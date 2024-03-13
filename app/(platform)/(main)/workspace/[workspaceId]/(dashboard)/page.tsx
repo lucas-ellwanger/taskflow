@@ -44,9 +44,7 @@ const WorkspaceIdPage = async ({ params }: WorkspaceIdPageProps) => {
       </Suspense>
       <Separator className="my-4" />
       <div className="px-2 md:px-4">
-        <Suspense fallback={<BoardList.Skeleton />}>
-          <BoardList boards={workspace?.boards} />
-        </Suspense>
+        <BoardList />
       </div>
     </div>
   );
