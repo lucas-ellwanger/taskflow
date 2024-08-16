@@ -1,13 +1,15 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
-import type { Config } from "drizzle-kit";
+config({ path: ".env" });
 
-export default {
+export default defineConfig({
   schema: "./server/db/schema.ts",
-  out: "./drizzle",
-  driver: "pg",
+  dialect: "postgresql",
   dbCredentials: {
-    connectionString: process.env.NEON_DATABASE_URL!,
+    url: process.env.NEON_DATABASE_URL!,
   },
+  verbose: true,
+  strict: true,
   tablesFilter: ["taskflow_*"],
-} satisfies Config;
+});

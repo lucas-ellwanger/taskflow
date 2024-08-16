@@ -7,7 +7,7 @@
     "build": "next build",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
   },
@@ -17,7 +17,7 @@
     "@edgestore/server": "^0.1.6",
     "@hello-pangea/dnd": "^16.6.0",
     "@hookform/resolvers": "^3.3.4",
-    "@neondatabase/serverless": "0.9.1",
+    "@neondatabase/serverless": "0.9.4",
     "@paralleldrive/cuid2": "^2.2.2",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -37,7 +37,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "0.30.8",
+    "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.368.0",
@@ -68,10 +68,10 @@
     "@typescript-eslint/parser": "^7.7.0",
     "autoprefixer": "^10.4.19",
     "dotenv": "^16.4.5",
-    "drizzle-kit": "0.20.14",
+    "drizzle-kit": "0.24.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.1",
-    "pg": "8.11.5",
+    "pg": "^8.12.0",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
@@ -81,5 +81,5 @@
   "ct3aMetadata": {
     "initVersion": "7.27.0"
   },
-  "packageManager": "pnpm@8.14.1"
+  "packageManager": "pnpm@9.7.0"
 }
